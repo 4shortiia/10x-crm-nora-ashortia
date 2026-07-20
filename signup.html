@@ -1,45 +1,71 @@
+<!-- signup.html -->
 <!doctype html>
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Sign Up - 10X CRM</title>
+  <title>Sign Up - Shinobi CRM</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/guard.js"></script>
  </head>
- <body>
-  <div class="auth-container">
-   <h2>Create your account</h2>
-   <form id="signup-form">
+ <body class="auth-container">
+  <div class="auth-card">
+   <h2>Join <span class="anime-brand-text">Shinobi CRM</span></h2>
+   <form id="signupForm" novalidate>
     <div class="form-group">
-     <input type="text" id="fullName" placeholder="Full Name" />
-     <div class="error-message" id="err-fullName"></div>
+     <label>Full Name</label>
+     <input
+      type="text"
+      id="fullName"
+      class="form-control"
+      placeholder="Kakashi Hatake"
+     />
+     <span class="error-text" id="nameError"></span>
     </div>
     <div class="form-group">
-     <input type="text" id="email" placeholder="Email" />
-     <div class="error-message" id="err-email"></div>
+     <label>Email</label>
+     <input
+      type="email"
+      id="email"
+      class="form-control"
+      placeholder="kakashi@leaf.com"
+     />
+     <span class="error-text" id="emailError"></span>
     </div>
     <div class="form-group">
-     <input type="text" id="company" placeholder="Company (optional)" />
-     <div class="error-message" id="err-company"></div>
+     <label>Company (Optional)</label>
+     <input
+      type="text"
+      id="company"
+      class="form-control"
+      placeholder="Company (optional)"
+     />
     </div>
     <div class="form-group">
-     <input type="password" id="password" placeholder="Password" />
-     <div class="error-message" id="err-password"></div>
+     <label>Password</label>
+     <input
+      type="password"
+      id="password"
+      class="form-control"
+      placeholder="••••••••"
+     />
+     <span class="error-text" id="passwordError"></span>
     </div>
     <div class="form-group">
+     <label>Confirm Password</label>
      <input
       type="password"
       id="confirmPassword"
-      placeholder="Confirm Password"
+      class="form-control"
+      placeholder="••••••••"
      />
-     <div class="error-message" id="err-confirmPassword"></div>
+     <span class="error-text" id="confirmPasswordError"></span>
     </div>
-    <button type="submit" class="btn">Create Account</button>
+    <button type="submit" class="btn btn-primary">Create Account</button>
    </form>
-   <p>Already have an account? <a href="index.html">Log in</a></p>
+   <div class="auth-footer">
+    Already have an account? <a href="index.html">Log in</a>
+   </div>
   </div>
-  <script src="js/guard.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/theme.js"></script>
   <script src="js/auth.js"></script>
  </body>
 </html>
