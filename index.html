@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>Login - 10X CRM</title>
+  <link rel="stylesheet" href="css/styles.css" />
+ </head>
+ <body>
+  <div class="auth-container">
+   <h2>Welcome back</h2>
+   <form id="login-form">
+    <div class="form-group">
+     <input type="text" id="login-email" placeholder="Email" />
+     <div class="error-message" id="err-login-email"></div>
+    </div>
+    <div class="form-group">
+     <input type="password" id="login-password" placeholder="Password" />
+     <div class="error-message" id="err-login-password"></div>
+    </div>
+    <div
+     class="error-message"
+     id="global-login-error"
+     style="margin-bottom: 10px"
+    ></div>
+    <button type="submit" class="btn">Log In</button>
+   </form>
+   <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+  </div>
+  <script src="js/guard.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/auth.js"></script>
+ </body>
+</html>
