@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>Clients - 10X CRM</title>
+  <link rel="stylesheet" href="css/styles.css" />
+ </head>
+ <body>
+  <nav class="navbar">
+   <div class="logo">10X CRM</div>
+   <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="clients.html" class="active">Clients</a>
+    <a href="profile.html">Profile</a>
+    <button
+     id="theme-toggle"
+     class="btn"
+     style="width: auto; display: inline-block"
+    >
+     Theme
+    </button>
+    <a href="#" id="logout-btn">Logout</a>
+   </div>
+  </nav>
+  <div class="main-content">
+   <div
+    style="display: flex; justify-content: space-between; align-items: center"
+   >
+    <h2>Clients</h2>
+    <button id="open-add-modal" class="btn" style="width: auto">
+     + Add Client
+    </button>
+   </div>
+
+   <!-- Toolbar -->
+   <div style="margin: 20px 0; display: flex; gap: 15px; align-items: center">
+    <input
+     type="text"
+     id="search-input"
+     placeholder="Search by name or company..."
+     style="padding: 8px; width: 250px"
+    />
+    <div id="filter-chips">
+     <button class="chip active" data-status="All">All</button>
+     <button class="chip" data-status="Lead">Lead</button>
+     <button class="chip" data-status="Contacted">Contacted</button>
+     <button class="chip" data-status="Won">Won</button>
+     <button class="chip" data-status="Lost">Lost</button>
+    </div>
+    <select id="sort-select" style="padding: 8px">
+     <option value="Newest">Newest first</option>
+     <option value="Name">Name A->Z</option>
+     <option value="Value">Deal value: high -> low</option>
+    </select>
+   </div>
+
+   <div id="clients-container">Loading clients...</div>
+  </div>
+
+  <!-- Add Client Modal -->
+  <div id="add-modal" class="modal hidden">
+   <div class="modal-content">
+    <h3>Add New Client</h3>
+    <form id="add-client-form">
+     <div class="form-group">
+      <input type="text" id="c-name" placeholder="Name" />
+      <div class="error-message" id="err-c-name"></div>
+     </div>
+     <div class="form-group">
+      <input type="text" id="c-email" placeholder="Email" />
+      <div class="error-message" id="err-c-email"></div>
+     </div>
+     <div class="form-group">
+      <input type="text" id="c-phone" placeholder="Phone" />
+      <div class="error-message" id="err-c-phone"></div>
+     </div>
+     <div class="form-group">
+      <input type="text" id="c-company" placeholder="Company" />
+      <div class="error-message" id="err-c-company"></div>
+     </div>
+     <div class="form-group">
+      <input type="number" id="c-value" placeholder="Deal Value" />
+      <div class="error-message" id="err-c-value"></div>
+     </div>
+     <div class="form-group">
+      <select id="c-status">
+       <option value="Lead">Lead</option>
+       <option value="Contacted">Contacted</option>
+       <option value="Won">Won</option>
+       <option value="Lost">Lost</option>
+      </select>
+     </div>
+     <button type="submit" class="btn">Save Client</button>
+     <button
+      type="button"
+      id="close-add-modal"
+      class="btn"
+      style="background: #6c757d; margin-top: 10px"
+     >
+      Cancel
+     </button>
+    </form>
+   </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="details-modal" class="modal hidden">
+   <div class="modal-content">
+    <h3 id="det-name">Client Details</h3>
+    <p id="det-info"></p>
+    <h4>Notes:</h4>
+    <ul id="notes-list"></ul>
+    <div class="form-group">
+     <input type="text" id="new-note-input" placeholder="Write a note..." />
+    </div>
+    <button id="add-note-btn" class="btn">Add Note</button>
+    <button
+     id="remind-btn"
+     class="btn"
+     style="background: var(--warning-color); color: black; margin-top: 10px"
+    >
+     Remind me in 1 min
+    </button>
+    <button
+     type="button"
+     id="close-details-modal"
+     class="btn"
+     style="background: #6c757d; margin-top: 10px"
+    >
+     Close
+    </button>
+   </div>
+  </div>
+
+  <script src="js/guard.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/clients.js"></script>
+ </body>
+</html>
