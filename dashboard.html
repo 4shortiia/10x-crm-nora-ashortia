@@ -1,59 +1,113 @@
+<!-- dashboard.html -->
 <!doctype html>
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - 10X CRM</title>
+  <title>Dashboard - Shinobi CRM</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/guard.js"></script>
  </head>
  <body>
-  <nav class="navbar">
-   <div class="logo">10X CRM</div>
-   <div class="nav-links">
-    <a href="dashboard.html" class="active">Dashboard</a>
-    <a href="clients.html">Clients</a>
-    <a href="profile.html">Profile</a>
-    <button
-     id="theme-toggle"
-     class="btn"
-     style="width: auto; display: inline-block"
-    >
-     Theme
-    </button>
-    <a href="#" id="logout-btn">Logout</a>
-   </div>
-  </nav>
-  <div class="main-content">
-   <h2 id="welcome-message">Welcome back!</h2>
-   <div class="stats-grid">
-    <div class="stat-card">
-     <h3>Total Clients</h3>
-     <p id="stat-total">0</p>
+  <div class="app-container">
+   <!-- P0.2 - Sidebar Navigation Structure [source: 1] -->
+   <aside class="sidebar">
+    <h2 class="sidebar-logo">
+     <span class="anime-brand-text">🍥 Shinobi CRM</span>
+    </h2>
+    <ul class="nav-menu">
+     <li class="nav-item active"><a href="dashboard.html">🏠 Dashboard</a></li>
+     <li class="nav-item"><a href="clients.html">👥 Clients Base</a></li>
+     <li class="nav-item"><a href="profile.html">👤 Ninja Profile</a></li>
+    </ul>
+    <div class="sidebar-footer">
+     <button
+      id="themeToggleBtn"
+      class="btn btn-primary"
+      style="background: #4c6ef5"
+     >
+      ☯ Theme
+     </button>
+     <button id="logoutBtn" class="btn btn-danger">🚪 Log Out</button>
     </div>
-    <div class="stat-card">
-     <h3>Active Deals</h3>
-     <p id="stat-active">0</p>
+   </aside>
+
+   <main class="main-content">
+    <header class="dashboard-header">
+     <div>
+      <h1 id="welcomeGreeting">Welcome back!</h1>
+      <p style="color: var(--text-muted); margin-top: 5px">
+       Your tactical field evaluation metrics.
+      </p>
+     </div>
+     <div
+      id="liveClock"
+      style="font-weight: 600; font-size: 1.1rem; color: var(--accent-color)"
+     ></div>
+    </header>
+
+    <!-- P3.2 - Four Business Stats cards [source: 1] -->
+    <section class="stats-grid">
+     <div class="stat-card">
+      <h3>Total Contacts</h3>
+      <div class="value" id="statTotal">0</div>
+     </div>
+     <div class="stat-card">
+      <h3>Active Missions</h3>
+      <div class="value" id="statActive">0</div>
+     </div>
+     <div class="stat-card">
+      <h3>Bounty Won</h3>
+      <div class="value" id="statWon">0</div>
+     </div>
+     <div class="stat-card">
+      <h3>New This Week</h3>
+      <div class="value" id="statNewWeek">0</div>
+     </div>
+    </section>
+
+    <!-- P3.3 & P3.4 - Complex Pipeline overview and lists [source: 1] -->
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem">
+     <div class="stat-card">
+      <h3>Pipeline Stages</h3>
+      <div
+       id="pipelineSummary"
+       style="
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+       "
+      ></div>
+     </div>
+     <div class="stat-card">
+      <div
+       style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+       "
+      >
+       <h3>Recent Reconnaissance Arrivals</h3>
+       <a
+        href="clients.html"
+        style="
+         color: var(--accent-color);
+         text-decoration: none;
+         font-weight: 600;
+        "
+        >View Full Scroll →</a
+       >
+      </div>
+      <table
+       style="width: 100%; border-collapse: collapse; text-align: left"
+       id="recentClientsTable"
+      ></table>
+     </div>
     </div>
-    <div class="stat-card">
-     <h3>Won Revenue</h3>
-     <p id="stat-revenue">$0</p>
-    </div>
-    <div class="stat-card">
-     <h3>New This Week</h3>
-     <p id="stat-week">0</p>
-    </div>
-   </div>
-   <div>
-    <h3>Pipeline Overview</h3>
-    <p id="pipeline-summary">Loading...</p>
-   </div>
-   <div>
-    <h3>Recent Clients</h3>
-    <ul id="recent-clients-list"></ul>
-    <a href="clients.html">View all clients &rarr;</a>
-   </div>
+   </main>
   </div>
-  <script src="js/guard.js"></script>
-  <script src="js/theme.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/dashboard.js"></script>
  </body>
 </html>
