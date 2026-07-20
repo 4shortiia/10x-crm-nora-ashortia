@@ -1,140 +1,249 @@
+<!-- clients.html -->
 <!doctype html>
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Clients - 10X CRM</title>
+  <title>Scroll Base - Shinobi CRM</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/guard.js"></script>
  </head>
  <body>
-  <nav class="navbar">
-   <div class="logo">10X CRM</div>
-   <div class="nav-links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="clients.html" class="active">Clients</a>
-    <a href="profile.html">Profile</a>
-    <button
-     id="theme-toggle"
-     class="btn"
-     style="width: auto; display: inline-block"
-    >
-     Theme
-    </button>
-    <a href="#" id="logout-btn">Logout</a>
-   </div>
-  </nav>
-  <div class="main-content">
-   <div
-    style="display: flex; justify-content: space-between; align-items: center"
-   >
-    <h2>Clients</h2>
-    <button id="open-add-modal" class="btn" style="width: auto">
-     + Add Client
-    </button>
-   </div>
-
-   <!-- Toolbar -->
-   <div style="margin: 20px 0; display: flex; gap: 15px; align-items: center">
-    <input
-     type="text"
-     id="search-input"
-     placeholder="Search by name or company..."
-     style="padding: 8px; width: 250px"
-    />
-    <div id="filter-chips">
-     <button class="chip active" data-status="All">All</button>
-     <button class="chip" data-status="Lead">Lead</button>
-     <button class="chip" data-status="Contacted">Contacted</button>
-     <button class="chip" data-status="Won">Won</button>
-     <button class="chip" data-status="Lost">Lost</button>
+  <div class="app-container">
+   <aside class="sidebar">
+    <h2 class="sidebar-logo">
+     <span class="anime-brand-text">🍥 Shinobi CRM</span>
+    </h2>
+    <ul class="nav-menu">
+     <li class="nav-item"><a href="dashboard.html">🏠 Dashboard</a></li>
+     <li class="nav-item active"><a href="clients.html">👥 Clients Base</a></li>
+     <li class="nav-item"><a href="profile.html">👤 Ninja Profile</a></li>
+    </ul>
+    <div class="sidebar-footer">
+     <button
+      id="themeToggleBtn"
+      class="btn btn-primary"
+      style="background: #4c6ef5"
+     >
+      ☯ Theme
+     </button>
+     <button id="logoutBtn" class="btn btn-danger">🚪 Log Out</button>
     </div>
-    <select id="sort-select" style="padding: 8px">
-     <option value="Newest">Newest first</option>
-     <option value="Name">Name A->Z</option>
-     <option value="Value">Deal value: high -> low</option>
-    </select>
-   </div>
+   </aside>
 
-   <div id="clients-container">Loading clients...</div>
+   <main class="main-content">
+    <div
+     style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+     "
+    >
+     <h1>Ninja Operations Database</h1>
+     <button class="btn btn-primary" id="openAddModalBtn" style="width: auto">
+      ➕ Summon New Asset
+     </button>
+    </div>
+
+    <!-- P4.7 Toolbar (Search + Chips + Sorting) [source: 1] -->
+    <div class="toolbar">
+     <input
+      type="text"
+      id="searchInput"
+      class="form-control"
+      placeholder="Search by character name or division..."
+      style="max-width: 300px"
+     />
+     <div class="filter-chips">
+      <button class="chip active" data-filter="All">All Assets</button>
+      <button class="chip" data-filter="Lead">Genin (Lead)</button>
+      <button class="chip" data-filter="Contacted">Chunin (Contacted)</button>
+      <button class="chip" data-filter="Won">Jonin (Won)</button>
+      <button class="chip" data-filter="Lost">Missing-Nin (Lost)</button>
+     </div>
+     <select id="sortSelect" class="form-control" style="max-width: 180px">
+      <option value="Newest">Newest Arrived</option>
+      <option value="Alpha">Name (A-Z)</option>
+      <option value="Value">Bounty (High-Low)</option>
+     </select>
+    </div>
+
+    <div
+     id="loadingIndicator"
+     style="
+      font-weight: 600;
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+     "
+    >
+     Loading system scrolls...
+    </div>
+    <div class="clients-list" id="clientsGrid"></div>
+   </main>
   </div>
 
-  <!-- Add Client Modal -->
-  <div id="add-modal" class="modal hidden">
+  <!-- ADD CLIENT MODAL -->
+  <div class="modal" id="addClientModal">
    <div class="modal-content">
-    <h3>Add New Client</h3>
-    <form id="add-client-form">
+    <span class="close-modal" id="closeAddModal">✕</span>
+    <h3>Summon New Character Asset</h3>
+    <form id="addClientForm" style="margin-top: 1.5rem" novalidate>
      <div class="form-group">
-      <input type="text" id="c-name" placeholder="Name" />
-      <div class="error-message" id="err-c-name"></div>
+      <label>Character Name</label>
+      <input
+       type="text"
+       id="addName"
+       class="form-control"
+       placeholder="Eren Yeager"
+      />
+      <span class="error-text" id="addNameError"></span>
      </div>
      <div class="form-group">
-      <input type="text" id="c-email" placeholder="Email" />
-      <div class="error-message" id="err-c-email"></div>
+      <label>Email Grid Connection</label>
+      <input
+       type="email"
+       id="addEmail"
+       class="form-control"
+       placeholder="eren@rumbling.com"
+      />
+      <span class="error-text" id="addEmailError"></span>
      </div>
      <div class="form-group">
-      <input type="text" id="c-phone" placeholder="Phone" />
-      <div class="error-message" id="err-c-phone"></div>
+      <label>Den Den Mushi (Phone)</label>
+      <input
+       type="text"
+       id="addPhone"
+       class="form-control"
+       placeholder="+81 90-XXXX"
+      />
+      <span class="error-text" id="addPhoneError"></span>
      </div>
      <div class="form-group">
-      <input type="text" id="c-company" placeholder="Company" />
-      <div class="error-message" id="err-c-company"></div>
+      <label>Affiliation / Regiment</label>
+      <input
+       type="text"
+       id="addCompany"
+       class="form-control"
+       placeholder="Survey Corps"
+      />
      </div>
      <div class="form-group">
-      <input type="number" id="c-value" placeholder="Deal Value" />
-      <div class="error-message" id="err-c-value"></div>
+      <label>Operational Bounty Value ($)</label>
+      <input
+       type="number"
+       id="addValue"
+       class="form-control"
+       placeholder="7500"
+      />
+      <span class="error-text" id="addValueError"></span>
      </div>
      <div class="form-group">
-      <select id="c-status">
+      <label>Operational Standing Status</label>
+      <select id="addStatus" class="form-control">
        <option value="Lead">Lead</option>
        <option value="Contacted">Contacted</option>
        <option value="Won">Won</option>
        <option value="Lost">Lost</option>
       </select>
      </div>
-     <button type="submit" class="btn">Save Client</button>
-     <button
-      type="button"
-      id="close-add-modal"
-      class="btn"
-      style="background: #6c757d; margin-top: 10px"
-     >
-      Cancel
+     <button type="submit" class="btn btn-primary">
+      Formulate Manifestation
      </button>
     </form>
    </div>
   </div>
 
-  <!-- Details Modal -->
-  <div id="details-modal" class="modal hidden">
-   <div class="modal-content">
-    <h3 id="det-name">Client Details</h3>
-    <p id="det-info"></p>
-    <h4>Notes:</h4>
-    <ul id="notes-list"></ul>
-    <div class="form-group">
-     <input type="text" id="new-note-input" placeholder="Write a note..." />
+  <!-- DETAILS MODAL -->
+  <div class="modal" id="detailsModal">
+   <div class="modal-content" style="max-width: 550px">
+    <span class="close-modal" id="closeDetailsModal">✕</span>
+    <div
+     style="
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+     "
+    >
+     <img
+      id="detImage"
+      src=""
+      style="
+       width: 70px;
+       height: 70px;
+       border-radius: 50%;
+       border: 2px solid var(--accent-color);
+      "
+     />
+     <div>
+      <h2 id="detName">Character Details</h2>
+      <p id="detMeta" style="color: var(--text-muted); font-size: 0.9rem"></p>
+     </div>
     </div>
-    <button id="add-note-btn" class="btn">Add Note</button>
-    <button
-     id="remind-btn"
-     class="btn"
-     style="background: var(--warning-color); color: black; margin-top: 10px"
+    <div
+     style="
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 0.95rem;
+     "
     >
-     Remind me in 1 min
-    </button>
-    <button
-     type="button"
-     id="close-details-modal"
-     class="btn"
-     style="background: #6c757d; margin-top: 10px"
+     <div>📧: <span id="detEmail"></span></div>
+     <div>📞: <span id="detPhone"></span></div>
+     <div>💰 Bounty: <strong id="detValue"></strong></div>
+     <div>📅 Inducted: <span id="detDate"></span></div>
+    </div>
+
+    <div
+     style="
+      margin-top: 1.5rem;
+      background: var(--bg-primary);
+      padding: 1rem;
+      border-radius: 8px;
+     "
     >
-     Close
-    </button>
+     <h4>Summoner's Tactical Field Notes</h4>
+     <div
+      id="notesContainer"
+      style="
+       max-height: 140px;
+       overflow-y: auto;
+       margin: 10px 0;
+       font-size: 0.9rem;
+       display: flex;
+       flex-direction: column;
+       gap: 5px;
+      "
+     ></div>
+     <div style="display: flex; gap: 8px; margin-top: 8px">
+      <input
+       type="text"
+       id="noteInput"
+       class="form-control"
+       placeholder="Write logs onto scroll..."
+      />
+      <button
+       class="btn btn-primary"
+       id="addNoteBtn"
+       style="width: auto; padding: 0 1rem"
+      >
+       Log
+      </button>
+     </div>
+    </div>
+    <div style="margin-top: 1rem">
+     <button class="btn btn-primary" id="remindBtn" style="background: #f59f00">
+      ⏳ Set Shadow Alarm (1 Min)
+     </button>
+    </div>
    </div>
   </div>
 
-  <script src="js/guard.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/theme.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/clients.js"></script>
  </body>
 </html>
