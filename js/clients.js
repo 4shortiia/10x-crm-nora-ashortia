@@ -1,316 +1,301 @@
-document.addEventListener("DOMContentLoaded", () => {
-    let clientsState = [];
-    let activeFilter = "All";
-    let currentSelectedClientId = null;
+// js/clients.js
+document.addEventListener("DOMContentLoaded", async () => {
+    let currentFilter = "All";
+    let selectedClientId = null;
 
-    const container = document.getElementById("clients-container");
+    const grid = document.getElementById("clientsGrid");
+    const loader = document.getElementById("loadingIndicator");
 
-    // API loading logic (with error handling)
-    async function loadClients() {
-        const localData = localStorage.getItem("crm_clients");
-        if (localData) {
-            clientsState = JSON.parse(localData);
-            applyFilters();
-            return;
-        }
-
+    // Load State via Core Engine with Try/Catch Retry Protection [source: 1]
+    async function initFetch() {
         try {
-            container.innerHTML = "Loading clients...";
-            const response = await fetch(
-                "https://dummyjson.com/users?limit=30",
-            );
-            if (!response.ok) throw new Error();
-            const data = await response.json();
-            clientsState = data.users.map((u) => ({
-                id: u.id,
-                name: `${u.firstName} ${u.lastName}`,
-                phone: u.phone,
-                email: u.email,
-                company: u.company.name,
-                image: u.image,
-                status: "Lead",
-                dealValue: 1000,
-                notes: [],
-                createdAt: new Date().toISOString(),
-            }));
-            saveState();
-            applyFilters();
+            loader.style.display = "block"; // [source: 1]
+            grid.innerHTML = "";
+            await DataEngine.loadClients(); // [source: 1]
+            loader.style.display = "none"; // [source: 1]
+            applyFiltersAndRender();
         } catch (err) {
-            container.innerHTML = `<div>Could not load clients. Check your connection and try again. <button id="retry-btn" class="btn" style="width:auto;">Retry</button></div>`;
+            loader.innerHTML = `
+                <p style="color:var(--status-lost-text)">Could not load clients. Check your connection and try again.</p>
+                <button class="btn btn-primary" id="retryBtn" style="width:auto; margin-top:10px;">🔄 Retry Synapse</button>`; // [source: 1]
             document
-                .getElementById("retry-btn")
-                .addEventListener("click", loadClients);
+                .getElementById("retryBtn")
+                ?.addEventListener("click", initFetch); // [source: 1]
         }
     }
+    await initFetch();
 
-    function saveState() {
-        localStorage.setItem("crm_clients", JSON.stringify(clientsState));
-    }
+    // P4.7 - Master Filter/Search/Sort Architecture Composite Engine [source: 1]
+    function applyFiltersAndRender() {
+        let list = [...DataEngine.state.clients]; // Operates safely on cloned array instance [source: 1]
 
-    // Filter, search, sort (on a copy of the same array)
-    function applyFilters() {
-        let filtered = [...clientsState];
-
-        if (activeFilter !== "All") {
-            filtered = filtered.filter((c) => c.status === activeFilter);
+        // 1. Stage status resolution [source: 1]
+        if (currentFilter !== "All") {
+            list = list.filter((c) => c.status === currentFilter); // [source: 1]
         }
 
+        // 2. Multi-column query substring matching [source: 1]
         const query = document
-            .getElementById("search-input")
-            .value.toLowerCase();
+            .getElementById("searchInput")
+            .value.toLowerCase()
+            .trim(); // [source: 1]
         if (query) {
-            filtered = filtered.filter(
+            list = list.filter(
                 (c) =>
                     c.name.toLowerCase().includes(query) ||
                     c.company.toLowerCase().includes(query),
-            );
+            ); // [source: 1]
         }
 
-        const sortBy = document.getElementById("sort-select").value;
+        // 3. Sequential Sorting logic routing [source: 1]
+        const sortBy = document.getElementById("sortSelect").value;
         if (sortBy === "Newest") {
-            filtered.sort(
-                (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-            );
-        } else if (sortBy === "Name") {
-            filtered.sort((a, b) => a.name.localeCompare(b.name));
+            list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // [source: 1]
+        } else if (sortBy === "Alpha") {
+            list.sort((a, b) => a.name.localeCompare(b.name)); // [source: 1]
         } else if (sortBy === "Value") {
-            filtered.sort((a, b) => b.dealValue - a.dealValue);
+            list.sort((a, b) => b.dealValue - a.dealValue); // [source: 1]
         }
 
-        renderClients(filtered);
+        renderGrid(list);
     }
 
-    function renderClients(list) {
-        container.innerHTML = "";
-        if (list.length === 0) {
-            container.innerHTML = "<p>No clients found.</p>";
+    // P4.3 - Primary DOM Renderer engine [source: 1]
+    function renderGrid(elements) {
+        grid.innerHTML = "";
+        if (elements.length === 0) {
+            grid.innerHTML =
+                '<div style="text-align:center;width:100%;grid-column:1/-1;color:var(--text-muted);font-weight:600;">No clients found.</div>'; // [source: 1]
+            return;
+        }
+        elements.forEach((c) => {
+            const card = document.createElement("div");
+            card.className = "client-card";
+            card.setAttribute("data-id", c.id); // [source: 1]
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <img src="${c.image}" style="width:45px; height:45px; border-radius:50%; background:#f1f3f5;">
+                        <div>
+                            <h4 style="font-size:1.05rem;">${c.name}</h4>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">${c.company}</p>
+                        </div>
+                    </div>
+                    <span class="badge ${c.status.toLowerCase()}">${c.status}</span>
+                </div>
+                <div style="margin-top:1rem; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--accent-color);">$${c.dealValue.toLocaleString()}</strong>
+                    <select class="status-select form-control" style="width:auto; padding:3px 8px; font-size:0.8rem; height:auto;" data-id="${c.id}">
+                        <option value="Lead" ${c.status === "Lead" ? "selected" : ""}>Lead</option>
+                        <option value="Contacted" ${c.status === "Contacted" ? "selected" : ""}>Contacted</option>
+                        <option value="Won" ${c.status === "Won" ? "selected" : ""}>Won</option>
+                        <option value="Lost" ${c.status === "Lost" ? "selected" : ""}>Lost</option>
+                    </select>
+                    <button class="btn btn-danger delete-card-btn" style="padding:4px 8px; font-size:0.8rem;" data-id="${c.id}">Delete</button>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    // Event Delegation Interceptor mappings for grid triggers [source: 1]
+    grid.addEventListener("click", (e) => {
+        const id = e.target.getAttribute("data-id");
+
+        // P4.5 - Delete Execution routine [source: 1]
+        if (e.target.classList.contains("delete-card-btn")) {
+            e.stopPropagation(); // Avoid triggering details modal overlay opening [source: 1]
+            if (confirm("Delete this client? This cannot be undone.")) {
+                // [source: 1]
+                DataEngine.deleteClient(id); // [source: 1]
+                showToast("Client deleted", "success"); // [source: 1]
+                applyFiltersAndRender(); // [source: 1]
+            }
             return;
         }
 
-        list.forEach((c) => {
-            const card = document.createElement("div");
-            card.className = "stat-card";
-            card.style.margin = "10px 0";
-            card.style.cursor = "pointer";
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div class="client-info-click" data-id="${c.id}" style="display:flex; gap:15px; align-items:center;">
-                        <img src="${c.image}" width="40" height="40" style="border-radius:50%;">
-                        <div>
-                            <strong>${c.name}</strong> <br>
-                            <small>${c.company} | ${c.email}</small> <br>
-                            <span style="color:var(--success-color); font-weight:bold;">$${c.dealValue}</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <select class="status-change" data-id="${c.id}">
-                            <option value="Lead" ${c.status === "Lead" ? "selected" : ""}>Lead</option>
-                            <option value="Contacted" ${c.status === "Contacted" ? "selected" : ""}>Contacted</option>
-                            <option value="Won" ${c.status === "Won" ? "selected" : ""}>Won</option>
-                            <option value="Lost" ${c.status === "Lost" ? "selected" : ""}>Lost</option>
-                        </select>
-                        <button class="delete-btn btn" data-id="${c.id}" style="background:var(--danger-color); width:auto; padding:5px 10px;">Delete</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+        // Inline status select modification trap [source: 1]
+        if (e.target.classList.contains("status-select")) {
+            e.stopPropagation();
+            return;
+        }
 
-        // Delegate events inside the card
-        container.querySelectorAll(".client-info-click").forEach((el) => {
-            el.addEventListener("click", () =>
-                openDetailsModal(el.getAttribute("data-id")),
-            );
-        });
-
-        container.querySelectorAll(".status-change").forEach((select) => {
-            select.addEventListener("change", (e) => {
-                const id = parseInt(select.getAttribute("data-id"));
-                const client = clientsState.find((c) => c.id === id);
-                if (client) {
-                    client.status = e.target.value;
-                    saveState();
-                    applyFilters();
-                }
-            });
-        });
-
-        container.querySelectorAll(".delete-btn").forEach((btn) => {
-            btn.addEventListener("click", async (e) => {
-                e.stopPropagation();
-                if (!confirm("Delete this client? This cannot be undone."))
-                    return;
-                const id = parseInt(btn.getAttribute("data-id"));
-
-                // Dummy server deletion
-                await fetch(`https://dummyjson.com/users/${id}`, {
-                    method: "DELETE",
-                });
-
-                clientsState = clientsState.filter((c) => c.id !== id);
-                saveState();
-                applyFilters();
-                toast.show("Client deleted", "success");
-            });
-        });
-    }
-
-    // --- ADD MODAL LOGIC ---
-    const addModal = document.getElementById("add-modal");
-    document.getElementById("open-add-modal").addEventListener("click", () => {
-        addModal.classList.remove("hidden");
-    });
-    document.getElementById("close-add-modal").addEventListener("click", () => {
-        addModal.classList.add("hidden");
+        // P4.8 - Open Character Details Modal window [source: 1]
+        const closestCard = e.target.closest(".client-card");
+        if (closestCard) {
+            const cardId = closestCard.getAttribute("data-id");
+            openDetailsModal(cardId);
+        }
     });
 
+    grid.addEventListener("change", (e) => {
+        // P4.6 - Status variation processing [source: 1]
+        if (e.target.classList.contains("status-select")) {
+            const id = e.target.getAttribute("data-id");
+            DataEngine.updateClientStatus(id, e.target.value); // [source: 1]
+            applyFiltersAndRender(); // Update styles & structures [source: 1]
+        }
+    });
+
+    // Toolbar Input Listeners [source: 1]
     document
-        .getElementById("add-client-form")
-        .addEventListener("submit", async (e) => {
-            e.preventDefault();
-            // Validation code
-            const name = document.getElementById("c-name").value.trim();
-            const email = document.getElementById("c-email").value.trim();
-            const phone = document.getElementById("c-phone").value.trim();
-            const company = document.getElementById("c-company").value.trim();
-            const val = parseFloat(document.getElementById("c-value").value);
+        .getElementById("searchInput")
+        .addEventListener("input", applyFiltersAndRender); // [source: 1]
+    document
+        .getElementById("sortSelect")
+        .addEventListener("change", applyFiltersAndRender); // [source: 1]
 
-            let error = false;
-            if (name.length < 3) {
-                document.getElementById("err-c-name").innerText =
-                    "Name must be at least 3 characters";
-                error = true;
-            }
-            if (!email.includes("@")) {
-                document.getElementById("err-c-email").innerText =
-                    "Please enter a valid email address";
-                error = true;
-            }
-            if (clientsState.some((c) => c.email === email)) {
-                document.getElementById("err-c-email").innerText =
-                    "A client with this email already exists";
-                error = true;
-            }
-            if (phone && phone.length < 6) {
-                document.getElementById("err-c-phone").innerText =
-                    "Phone number looks too short";
-                error = true;
-            }
-            if (isNaN(val) || val <= 0) {
-                document.getElementById("err-c-value").innerText =
-                    "Deal value must be a positive number";
-                error = true;
-            }
-
-            if (error) return;
-
-            // Mock POST request
-            const response = await fetch("https://dummyjson.com/users/add", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName: name, email }),
-            });
-            const serverData = await response.json();
-
-            const newClient = {
-                id: Date.now(), // We use a timestamp for uniqueness
-                name,
-                email,
-                phone,
-                company,
-                dealValue: val,
-                status: document.getElementById("c-status").value,
-                image: "https://dummyjson.com/icon/users/128",
-                notes: [],
-                createdAt: new Date().toISOString(),
-            };
-
-            clientsState.unshift(newClient);
-            saveState();
-            applyFilters();
-            addModal.classList.add("hidden");
-            document.getElementById("add-client-form").reset();
-            toast.show("Client added ✓", "success");
+    document.querySelectorAll(".filter-chips .chip").forEach((chip) => {
+        chip.addEventListener("click", (e) => {
+            document
+                .querySelectorAll(".filter-chips .chip")
+                .forEach((c) => c.classList.remove("active"));
+            e.target.classList.add("active"); // [source: 1]
+            currentFilter = e.target.getAttribute("data-filter"); // [source: 1]
+            applyFiltersAndRender(); // [source: 1]
         });
+    });
 
-    // --- DETAILS MODAL LOGIC ---
-    const detailsModal = document.getElementById("details-modal");
+    // --- ADD CLIENT LOGIC MODAL CODE --- [source: 1]
+    const addModal = document.getElementById("addClientModal");
+    document
+        .getElementById("openAddModalBtn")
+        .addEventListener("click", () => addModal.classList.add("open"));
+    document
+        .getElementById("closeAddModal")
+        .addEventListener("click", () => addModal.classList.remove("open"));
+
+    document.getElementById("addClientForm").addEventListener("submit", (e) => {
+        e.preventDefault(); // [source: 1]
+        document
+            .querySelectorAll(".error-text")
+            .forEach((el) => (el.textContent = ""));
+
+        const name = document.getElementById("addName").value.trim(); // [source: 1]
+        const email = document.getElementById("addEmail").value.trim(); // [source: 1]
+        const phone = document.getElementById("addPhone").value.trim(); // [source: 1]
+        const company = document.getElementById("addCompany").value.trim(); // [source: 1]
+        const value = document.getElementById("addValue").value; // [source: 1]
+        const status = document.getElementById("addStatus").value; // [source: 1]
+
+        let valid = true;
+        if (name.length < 3) {
+            document.getElementById("addNameError").textContent =
+                "Name must be at least 3 characters"; // [source: 1]
+            valid = false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            document.getElementById("addEmailError").textContent =
+                "Please enter a valid email address"; // [source: 1]
+            valid = false;
+        } else if (DataEngine.state.clients.some((c) => c.email === email)) {
+            // [source: 1]
+            document.getElementById("addEmailError").textContent =
+                "A client with this email already exists"; // [source: 1]
+            valid = false;
+        }
+        if (phone && phone.length < 6) {
+            document.getElementById("addPhoneError").textContent =
+                "Phone number looks too short"; // [source: 1]
+            valid = false;
+        }
+        if (!value || isNaN(value) || Number(value) <= 0) {
+            document.getElementById("addValueError").textContent =
+                "Deal value must be a positive number"; // [source: 1]
+            valid = false;
+        }
+
+        if (!valid) return; // Halt compilation if anomalies discovered [source: 1]
+
+        // Build new entity object [source: 1]
+        const targetObj = {
+            id: Date.now(),
+            name, // [source: 1]
+            email, // [source: 1]
+            phone: phone || "+81 Unspecified",
+            company: company || "Rogue Shinobi Division", // [source: 1]
+            image: "https://dummyjson.com/icon/users/7",
+            status, // [source: 1]
+            dealValue: Number(value), // [source: 1]
+            notes: [], // [source: 1]
+            createdAt: new Date().toISOString(), // [source: 1]
+        };
+
+        DataEngine.addClient(targetObj); // [source: 1]
+        addModal.classList.remove("open"); // [source: 1]
+        document.getElementById("addClientForm").reset();
+        showToast("Client added ✓", "success"); // [source: 1]
+        applyFiltersAndRender();
+    });
+
+    // --- CHARACTERS DETAILS & EXTENDED NOTES ENGINE --- [source: 1]
+    const detailsModal = document.getElementById("detailsModal");
+    document
+        .getElementById("closeDetailsModal")
+        .addEventListener("click", () => detailsModal.classList.remove("open"));
+
     function openDetailsModal(id) {
-        currentSelectedClientId = parseInt(id);
-        const client = clientsState.find(
-            (c) => c.id === currentSelectedClientId,
-        );
-        if (!client) return;
+        selectedClientId = id;
+        const target = DataEngine.state.clients.find((c) => c.id == id);
+        if (!target) return;
 
-        document.getElementById("det-name").innerText = client.name;
-        document.getElementById("det-info").innerHTML = `
-            Company: ${client.company} <br> Email: ${client.email} <br> Phone: ${client.phone} <br>
-            Status: ${client.status} | Value: $${client.dealValue} <br>
-            <small>Client since ${new Date(client.createdAt).toLocaleDateString()}</small>
-        `;
-        renderNotes(client.notes);
-        detailsModal.classList.remove("hidden");
+        document.getElementById("detImage").src = target.image;
+        document.getElementById("detName").textContent = target.name;
+        document.getElementById("detMeta").textContent =
+            `${target.company} (${target.status})`;
+        document.getElementById("detEmail").textContent = target.email;
+        document.getElementById("detPhone").textContent = target.phone;
+        document.getElementById("detValue").textContent =
+            `$${target.dealValue.toLocaleString()}`;
+        document.getElementById("detDate").textContent = new Date(
+            target.createdAt,
+        ).toLocaleDateString();
+
+        renderNotesList(target.notes);
+        detailsModal.classList.add("open");
     }
 
-    function renderNotes(notes) {
-        const list = document.getElementById("notes-list");
-        list.innerHTML = "";
+    function renderNotesList(notes) {
+        const container = document.getElementById("notesContainer");
+        container.innerHTML = "";
+        if (notes.length === 0) {
+            container.innerHTML =
+                '<p style="color:var(--text-muted);font-style:italic;">No log transcripts submitted yet.</p>';
+            return;
+        }
         notes.forEach((n) => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>${n.date}:</strong> ${n.text}`;
-            list.appendChild(li);
+            container.innerHTML += `
+                <div style="background:var(--bg-sidebar); padding:6px 10px; border-radius:6px; border:1px solid var(--border-color)">
+                    <p>${n.text}</p>
+                    <small style="color:var(--text-muted); font-size:0.75rem">${n.date}</small>
+                </div>`;
         });
     }
 
-    document.getElementById("add-note-btn").addEventListener("click", () => {
-        const input = document.getElementById("new-note-input");
-        const text = input.value.trim();
-        if (!text) return;
+    document.getElementById("addNoteBtn").addEventListener("click", () => {
+        const txt = document.getElementById("noteInput").value.trim(); // [source: 1]
+        if (!txt) return; // Prevent logging blank transcripts [source: 1]
 
-        const client = clientsState.find(
-            (c) => c.id === currentSelectedClientId,
+        DataEngine.addNoteToClient(selectedClientId, txt); // [source: 1]
+        document.getElementById("noteInput").value = "";
+
+        // Re-read structural update logs immediately [source: 1]
+        const clientInstance = DataEngine.state.clients.find(
+            (c) => c.id == selectedClientId,
         );
-        client.notes.push({ text, date: new Date().toLocaleString() });
-        saveState();
-        renderNotes(client.notes);
-        input.value = "";
+        renderNotesList(clientInstance.notes);
     });
 
-    document.getElementById("remind-btn").addEventListener("click", () => {
-        const client = clientsState.find(
-            (c) => c.id === currentSelectedClientId,
+    // P4.8 - Timeout Scheduling Notification Remind Engine [source: 1]
+    document.getElementById("remindBtn").addEventListener("click", () => {
+        const targetedClient = DataEngine.state.clients.find(
+            (c) => c.id == selectedClientId,
         );
-        toast.show("Reminder set ✓", "success");
+        if (!targetedClient) return;
+
+        showToast("Reminder set ✓", "success"); // [source: 1]
+
         setTimeout(() => {
-            toast.show(`⏰ Follow up: ${client.name}`, "error");
-        }, 60000); // A message will be sent in 60 seconds
+            showToast(`Follow up: ${targetedClient.name}`, "success"); // Triggers contextually even if UI windows are completely altered [source: 1]
+        }, 60000); // Executed at 60 seconds sharp [source: 1]
     });
-
-    document
-        .getElementById("close-details-modal")
-        .addEventListener("click", () => detailsModal.classList.add("hidden"));
-
-    // Bind Toolbar events
-    document
-        .getElementById("search-input")
-        .addEventListener("input", applyFilters);
-    document
-        .getElementById("sort-select")
-        .addEventListener("change", applyFilters);
-    document
-        .getElementById("filter-chips")
-        .querySelectorAll(".chip")
-        .forEach((chip) => {
-            chip.addEventListener("click", () => {
-                document
-                    .getElementById("filter-chips")
-                    .querySelector(".chip.active")
-                    .classList.remove("active");
-                chip.classList.add("active");
-                activeFilter = chip.getAttribute("data-status");
-                applyFilters();
-            });
-        });
-
-    loadClients();
 });
