@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>Profile - 10X CRM</title>
+  <link rel="stylesheet" href="css/styles.css" />
+ </head>
+ <body>
+  <nav class="navbar">
+   <div class="logo">10X CRM</div>
+   <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="clients.html">Clients</a>
+    <a href="profile.html" class="active">Profile</a>
+    <button
+     id="theme-toggle"
+     class="btn"
+     style="width: auto; display: inline-block"
+    >
+     Theme
+    </button>
+    <a href="#" id="logout-btn">Logout</a>
+   </div>
+  </nav>
+  <div class="main-content" style="max-width: 600px; margin: 0 auto">
+   <div
+    style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px"
+   >
+    <div
+     id="user-avatar"
+     style="
+      background: #0d6efd;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+     "
+    >
+     NB
+    </div>
+    <div>
+     <h2 id="prof-name" style="margin: 0">User Profile</h2>
+     <p id="prof-meta" style="margin: 5px 0 0 0; color: #6c757d"></p>
+    </div>
+   </div>
+
+   <div class="stat-card" style="margin-bottom: 20px">
+    <h3>Edit Profile</h3>
+    <form id="edit-profile-form">
+     <div class="form-group">
+      <input type="text" id="p-fullName" placeholder="Full Name" />
+      <div class="error-message" id="err-p-fullName"></div>
+     </div>
+     <div class="form-group">
+      <input type="text" id="p-company" placeholder="Company" />
+     </div>
+     <button type="submit" class="btn">Save Changes</button>
+    </form>
+   </div>
+
+   <div class="stat-card" style="margin-bottom: 20px">
+    <h3>Change Password</h3>
+    <form id="change-pass-form">
+     <div class="form-group">
+      <input type="password" id="curr-pass" placeholder="Current Password" />
+      <div class="error-message" id="err-curr-pass"></div>
+     </div>
+     <div class="form-group">
+      <input type="password" id="new-pass" placeholder="New Password" />
+      <div class="error-message" id="err-new-pass"></div>
+     </div>
+     <div class="form-group">
+      <input
+       type="password"
+       id="conf-new-pass"
+       placeholder="Confirm New Password"
+      />
+      <div class="error-message" id="err-conf-new-pass"></div>
+     </div>
+     <button type="submit" class="btn">Change Password</button>
+    </form>
+   </div>
+
+   <div class="stat-card" style="border-color: var(--danger-color)">
+    <h3 style="color: var(--danger-color)">Danger Zone</h3>
+    <button
+     id="reset-data-btn"
+     class="btn"
+     style="background: var(--danger-color)"
+    >
+     Reset CRM Data
+    </button>
+   </div>
+  </div>
+
+  <script src="js/guard.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/profile.js"></script>
+ </body>
+</html>
