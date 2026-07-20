@@ -1,4 +1,6 @@
-/* --- Anime CRM Premium Light Theme --- */
+/* ==========================================================================
+   🎨 Anime CRM Premium Light Theme
+   ========================================================================== */
 :root {
     /* ძირითადი ფონი - სუფთა ღია ნაცრისფერი და თეთრი */
     --bg-primary: #f8fafc;
@@ -27,7 +29,7 @@
     --radius: 12px;
 }
 
-/* Dark Theme Variables - სუფთა ნახშირისფერი (ლურჯი ტონების გარეშე) */
+/* 🌙 Dark Theme Variables - სუფთა ნახშირისფერი (ლურჯი ტონების გარეშე) */
 body.dark-theme {
     --bg-primary: #121212; /* სუფთა, ღრმა მუქი ფონი */
     --bg-sidebar: #1e1e1e; /* ოდნავ ღია მუქი ბლოკებისთვის */
@@ -51,12 +53,15 @@ body.dark-theme {
     --status-won-text: #4ade80;
 
     --status-lost-bg: rgba(220, 38, 38, 0.15);
-    --status-lost-text: #a93737; /* სუფთა წითელი (მეტალისფერი ელფერით) */
+    --status-lost-text: #f87171; /* სუფთა წითელი (მეტალისფერი ელფერით) */
 
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
+/* ==========================================================================
+   Base & Reset Styles
+   ========================================================================== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -74,22 +79,91 @@ body {
     min-height: 100vh;
 }
 
-/* Auth Pages Layout - გრადიენტის შეცვლა ნარინჯისფერ, ცისფერ და თეთრ ტონებში */
+/* ==========================================================================
+   🔒 Auth Pages Layout & Sign-Up Style Fixes
+   ========================================================================== */
 .auth-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    min-height: 100vh;
     background: linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #e0f2fe 100%);
+    padding: 20px;
 }
+
+/* Light რეჟიმის ბარათი */
+.auth-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+/* სათაურის ფიქსი ღია რეჟიმში */
+.auth-card h1,
+.auth-card h2,
+.auth-card h3 {
+    color: #0f172a !important;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* ინპუტების ფიქსი ღია რეჟიმში (რომ აღარ გაშავდეს) */
+.auth-card .form-control {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.auth-card label {
+    color: #475569 !important;
+}
+
+/* 🌙 მუქი თემის გადაწერები კონკრეტულად Auth გვერდისთვის */
 body.dark-theme .auth-container {
     background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
 }
 
-/* Form Controls */
+body.dark-theme .auth-card {
+    background: #1e1e1e;
+    border-color: #2d2d2d;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .auth-card h1,
+body.dark-theme .auth-card h2,
+body.dark-theme .auth-card h3 {
+    color: #ffffff !important;
+}
+
+body.dark-theme .auth-card .form-control {
+    background-color: #121212 !important;
+    border-color: #2d2d2d;
+    color: #ffffff !important;
+}
+
+body.dark-theme .auth-card label {
+    color: #a3a3a3 !important;
+}
+
+/* ==========================================================================
+   Form Controls (General App Inputs)
+   ========================================================================== */
 .form-group {
     margin-bottom: 1.25rem;
     position: relative;
+    text-align: left;
 }
 
 .form-group label {
@@ -125,7 +199,9 @@ body.dark-theme .auth-container {
     display: block;
 }
 
-/* Buttons */
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -167,7 +243,9 @@ body.dark-theme .auth-container {
     font-weight: 600;
 }
 
-/* App Core Layout (Sidebar + Main Content) */
+/* ==========================================================================
+   App Core Layout (Sidebar + Main Content)
+   ========================================================================== */
 .app-container {
     display: flex;
     width: 100%;
@@ -231,7 +309,9 @@ body.dark-theme .auth-container {
     gap: 1rem;
 }
 
-/* Toast/Notification System */
+/* ==========================================================================
+   Toast / Notification System
+   ========================================================================== */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -272,7 +352,9 @@ body.dark-theme .auth-container {
     }
 }
 
-/* Dashboard UI Layout */
+/* ==========================================================================
+   Dashboard UI Layout
+   ========================================================================== */
 .dashboard-header {
     background: var(--bg-sidebar);
     padding: 1.5rem;
@@ -310,7 +392,9 @@ body.dark-theme .auth-container {
     margin-top: 0.5rem;
 }
 
-/* Clients Toolbar & Cards */
+/* ==========================================================================
+   Clients Toolbar & Cards
+   ========================================================================== */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -384,7 +468,9 @@ body.dark-theme .auth-container {
     color: var(--status-lost-text);
 }
 
-/* Modals */
+/* ==========================================================================
+   Modals
+   ========================================================================== */
 .modal {
     position: fixed;
     top: 0;
