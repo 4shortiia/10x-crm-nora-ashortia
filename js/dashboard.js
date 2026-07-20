@@ -1,80 +1,83 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const session = JSON.parse(localStorage.getItem("crm_session"));
-    const users = JSON.parse(localStorage.getItem("crm_users") || "[]");
-    const currentUser = users.find((u) => u.id === session.userId);
+// js/dashboard.js
+document.addEventListener("DOMContentLoaded", async () => {
+    // P3.1 - Greeting Logic & Live Clock initialization [source: 1]
+    const session = JSON.parse(localStorage.getItem("crm_session")); // [source: 1]
+    const users = JSON.parse(localStorage.getItem("crm_users") || "[]"); // [source: 1]
+    const currentUser = users.find((u) => u.id === session?.userId);
 
-    const welcomeTitle = document.getElementById("welcome-message");
     if (currentUser) {
-        const firstName = currentUser.fullName.split(" ")[0];
-        setInterval(() => {
-            const now = new Date();
-            welcomeTitle.innerText = `Welcome back, ${firstName}! ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-        }, 1000);
+        const firstName = currentUser.fullName.split(" ")[0]; // Extracting first word [source: 1]
+        document.getElementById("welcomeGreeting").textContent =
+            `Welcome back, ${firstName}!`; // [source: 1]
     }
 
-    // Fetch data (golden cycle logic)
-    let clients = JSON.parse(localStorage.getItem("crm_clients"));
-    if (!clients) {
-        fetch("https://dummyjson.com/users?limit=30")
-            .then((res) => res.json())
-            .then((data) => {
-                clients = data.users.map((u) => ({
-                    id: u.id,
-                    name: `${u.firstName} ${u.lastName}`,
-                    phone: u.phone,
-                    email: u.email,
-                    company: u.company.name,
-                    image: u.image,
-                    status: "Lead",
-                    dealValue: Math.floor(Math.random() * 9500) + 500,
-                    notes: [],
-                    createdAt: new Date().toISOString(),
-                }));
-                localStorage.setItem("crm_clients", JSON.stringify(clients));
-                calculateStats(clients);
-            });
-    } else {
-        calculateStats(clients);
+    // Dynamic Clock Engine [source: 1]
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById("liveClock").textContent =
+            `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`; // [source: 1]
+    }, 1000);
+
+    // Load data through state core [source: 1]
+    try {
+        const clients = await DataEngine.loadClients(); // [source: 1]
+        renderDashboardMetrics(clients);
+    } catch (e) {
+        showToast("Error displaying metrics", "error"); // [source: 1]
     }
 
-    function calculateStats(data) {
-        document.getElementById("stat-total").innerText = data.length;
+    function renderDashboardMetrics(clients) {
+        // Card Calculations [source: 1]
+        document.getElementById("statTotal").textContent = clients.length; // [source: 1]
 
-        const activeDeals = data.filter(
+        const activeDeals = clients.filter(
             (c) => c.status !== "Won" && c.status !== "Lost",
-        ).length;
-        document.getElementById("stat-active").innerText = activeDeals;
+        ).length; // [source: 1]
+        document.getElementById("statActive").textContent = activeDeals;
 
-        const wonRevenue = data
+        const totalWon = clients
             .filter((c) => c.status === "Won")
-            .reduce((sum, c) => sum + c.dealValue, 0);
-        document.getElementById("stat-revenue").innerText =
-            `$${wonRevenue.toLocaleString()}`;
+            .reduce((acc, c) => acc + c.dealValue, 0); // [source: 1]
+        document.getElementById("statWon").textContent =
+            `$${totalWon.toLocaleString()}`; // [source: 1]
 
-        const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-        const newThisWeek = data.filter(
-            (c) => new Date(c.createdAt).getTime() >= oneWeekAgo,
-        ).length;
-        document.getElementById("stat-week").innerText = newThisWeek;
+        const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000; // [source: 1]
+        const newThisWeek = clients.filter(
+            (c) => new Date(c.createdAt).getTime() >= sevenDaysAgo,
+        ).length; // [source: 1]
+        document.getElementById("statNewWeek").textContent = newThisWeek;
 
-        // Pipeline Overview
-        const pipe = { Lead: 0, Contacted: 0, Won: 0, Lost: 0 };
-        data.forEach((c) => {
-            if (pipe[c.status] !== undefined) pipe[c.status]++;
+        // Pipeline Distribution breakdown [source: 1]
+        const stages = ["Lead", "Contacted", "Won", "Lost"]; // [source: 1]
+        const pipelineContainer = document.getElementById("pipelineSummary");
+        pipelineContainer.innerHTML = "";
+        stages.forEach((stage) => {
+            const count = clients.filter((c) => c.status === stage).length; // [source: 1]
+            pipelineContainer.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="badge ${stage.toLowerCase()}">${stage}</span>
+                    <strong style="font-size:1.1rem">${count}</strong>
+                </div>`;
         });
-        document.getElementById("pipeline-summary").innerText =
-            `Lead: ${pipe.Lead} | Contacted: ${pipe.Contacted} | Won: ${pipe.Won} | Lost: ${pipe.Lost}`;
 
-        // Recent Clients (ბოლო 5)
-        const recent = [...data]
+        // Recent 5 entries rendered safely [source: 1]
+        const recent = [...clients]
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0, 5);
-        const listContainer = document.getElementById("recent-clients-list");
-        listContainer.innerHTML = "";
+            .slice(0, 5); // [source: 1]
+        const table = document.getElementById("recentClientsTable");
+        table.innerHTML = `
+            <tr style="border-bottom:2px solid var(--border-color); color:var(--text-muted); font-size:0.9rem;">
+                <th style="padding:10px 5px;">Squad Member</th>
+                <th>Affiliation</th>
+                <th>Status</th>
+            </tr>`;
         recent.forEach((c) => {
-            const li = document.createElement("li");
-            li.innerText = `${c.name} - ${c.company} [${c.status}] (${new Date(c.createdAt).toLocaleDateString()})`;
-            listContainer.appendChild(li);
+            table.innerHTML += `
+                <tr style="border-bottom:1px solid var(--border-color); font-size:0.95rem;">
+                    <td style="padding:12px 5px; font-weight:500;">${c.name}</td>
+                    <td>${c.company}</td>
+                    <td><span class="badge ${c.status.toLowerCase()}">${c.status}</span></td>
+                </tr>`;
         });
     }
 });
