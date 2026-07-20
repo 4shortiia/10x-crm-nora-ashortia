@@ -1,34 +1,47 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Login - 10X CRM</title>
+  <title>Log In - Shinobi CRM</title>
   <link rel="stylesheet" href="css/styles.css" />
- </head>
- <body>
-  <div class="auth-container">
-   <h2>Welcome back</h2>
-   <form id="login-form">
-    <div class="form-group">
-     <input type="text" id="login-email" placeholder="Email" />
-     <div class="error-message" id="err-login-email"></div>
-    </div>
-    <div class="form-group">
-     <input type="password" id="login-password" placeholder="Password" />
-     <div class="error-message" id="err-login-password"></div>
-    </div>
-    <div
-     class="error-message"
-     id="global-login-error"
-     style="margin-bottom: 10px"
-    ></div>
-    <button type="submit" class="btn">Log In</button>
-   </form>
-   <p>Don't have an account? <a href="signup.html">Sign up</a></p>
-  </div>
   <script src="js/guard.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/theme.js"></script>
+ </head>
+ <body class="auth-container">
+  <div class="auth-card">
+   <h2>Welcome back, <span class="anime-brand-text">Captain</span></h2>
+   <span
+    class="error-text"
+    id="globalLoginError"
+    style="text-align: center; margin-bottom: 15px; font-weight: bold"
+   ></span>
+   <form id="loginForm" novalidate>
+    <div class="form-group">
+     <label>Email</label>
+     <input
+      type="email"
+      id="email"
+      class="form-control"
+      placeholder="levi@surveycorps.com"
+     />
+     <span class="error-text" id="emailError"></span>
+    </div>
+    <div class="form-group">
+     <label>Password</label>
+     <input
+      type="password"
+      id="password"
+      class="form-control"
+      placeholder="••••••••"
+     />
+     <span class="error-text" id="passwordError"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+   </form>
+   <div class="auth-footer">
+    Don't have an account? <a href="signup.html">Sign up</a>
+   </div>
+  </div>
   <script src="js/auth.js"></script>
  </body>
 </html>
