@@ -1,36 +1,27 @@
 # 10x-crm-nora-ashortia
 
-# 10X CRM - Client Relationship Management System
+# Shinobi CRM - Premium Operations Management Platform
 
-A lightweight, high-performance, single-page-feel CRM built strictly with Vanilla JavaScript, semantic HTML5, and modern CSS3. This application serves as a comprehensive portal for managing business clients, monitoring financial pipelines, and tracking user workflows without relying on external frameworks.
+## About
 
-## 🚀 Features
+Shinobi CRM is a highly personalized client relationship platform engineered specifically for tactical commanders managing active ninja divisions across the Hidden Leaf and individual combat sectors. The software streamlines contract workflows, asset validation tracking, and operational resource evaluations.
 
-- **Secure Route Guards:** Real-time session monitoring using `crm_session` tokens via JavaScript IIFE blocks to prevent unauthorized access.
-- **Dynamic Dashboard Analytics:** Real-time calculations of Won Revenue, Active Deals, and weekly client onboardings alongside a ticking system clock.
-- **Full CRUD Integration:** Asynchronous client onboarding, updates, and mock-server deletions mirroring state changes locally and to DummyJSON endpoints.
-- **Advanced Data Processing:** Non-destructive search, multi-status chip filtering, and structural sorting configurations (A-Z, Newest, High Value).
-- **User Profiles & Control:** Updatable company data counters, secure password modification forms, and an instant application cache factory reset.
-- **Intuitive UI Enhancements:** Centralized toaster notifications (`toast.js`) and a persistent dark/light theme toggle.
+## Features
 
-## 🛠️ Technology Stack
+- **Secure Access Control Guards**: Autonomous route interceptors processing valid tokens.
+- **Dynamic Clock & Synchronization Feed**: Live real-time operational temporal metric logs.
+- **Advanced State Query Engines**: Complex combinations of filter queries, structural multi-sort parameters, and state manipulation chains.
+- **Secure Validation Forms**: Full contextual alert traps built cleanly into input controllers.
+- **Field Alert Triggers**: Scheduled internal browser background microtasks for callback protocols.
 
-- **Frontend:** Semantic HTML5, CSS3 Custom Properties (Variables)
-- **Core Logic:** Vanilla JavaScript (ES6+ Module Pattern)
-- **State & Persistence:** Browser `localStorage` API
-- **Data Source:** DummyJSON REST API
+## Tech Stack
 
-## 💾 Storage Registry References
+- Vanilla HTML5 Semantic Nodes
+- Dynamic Variable Responsive Light/Dark CSS Grid Layout
+- Native Vanilla JavaScript ES6 Engine Modules
 
-The architecture relies strictly on the following designated browser storage keys:
+## Test Account
 
-- `crm_users` - Stores encrypted/plain credentials and user metadata objects.
-- `crm_session` - Tracks active user login timestamps and authentication state.
-- `crm_clients` - Holds the primary working client pipeline array.
-- `crm_theme` - Evaluates persistent styling mode configurations (`light` / `dark`).
-
-## ⚡ Quick Start
-
-1. Clone or download this repository structure.
-2. Open `index.html` via a local development server (e.g., VS Code Live Server).
-3. Register a new user account on `signup.html`, then log in to view the main panel.
+- **Email**: demo@test.com
+- **Password**: demo1234
+  _Alternatively, use the on-board creation interface to manifest custom parameters._
