@@ -1,37 +1,42 @@
-# Artificial Intelligence Operational Log & Adaptation Manifest
+# AI development log
 
-## Entry 1: Architecture Initialization
+A short log of the work sessions that built this project.
 
-- **Objective**: Structural separation for multi-page execution scopes.
-- **Prompt**: "Design a modular file template structure using pure Vanilla JS for an multi-page web application architecture that shares a common localized storage state array and requires centralized access control guards."
-- **Tool**: ChatGPT-4o
-- **Outcome**: Adopted. The recommendation cleanly isolated common script dependencies, avoiding repeating logic arrays.
+---
 
-## Entry 2: Secure Unified Validation Schemes
+### Entry 1 — Scaffolding and design system
 
-- **Objective**: Secure login exception alerts.
-- **Prompt**: "Provide a validation architecture processing credential comparisons that tells the user exactly if the user is wrong without disclosing if the error resides on the password text value or the login username."
-- **Tool**: Claude 3.5 Sonnet
-- **Outcome**: Implemented inside `auth.js`. Keeping errors generic protects directory structural records from unwanted probing queries.
+Set up the project structure (`css/`, `js/`) and ported the approved
+anime-style dashboard design into a shared `style.css` with CSS
+variables, so every page (auth screens, dashboard, clients, profile)
+draws from the same palette, type scale and components.
 
-## Entry 3: Composite Filter Arrays Refinement
+### Entry 2 — Accounts and sessions
 
-- **Objective**: Fixing state corruption issues during sort actions.
-- **Prompt**: "Every time I choose my alphabetical sort select button, my central raw database order gets permanently rearranged. Write a cleaner filter composition that does not mutate the core array."
-- **Tool**: Gemini 1.5 Pro
-- **Refinement**: Initially, the model omitted array clones. I modified the generation with a strict spread syntax copy operator (`[...data]`) to safely isolate active mutation processes.
-- **Learning**: Always manipulate data states through structural immutable array instances to preserve core integrity.
+Implemented `auth.js`: `crm_users` for stored accounts, `crm_signup`
+validation (valid email, 6+ character password), and `crm_session`
+for the logged-in user. Built the sign up and login pages, including
+the "Invalid email or password" message on bad credentials.
 
-## Entry 4: Async Fallback Integration
+### Entry 3 — Route protection
 
-- **Objective**: Handling API structural breaks gracefully.
-- **Prompt**: "Write a JavaScript asynchronous try catch block executing fetch that renders an element providing users manual click execution retry capabilities if networks collapse."
-- **Tool**: ChatGPT-4o
-- **Outcome**: Integrated within `js/clients.js`. This guarantees high stability marks on core operational routines.
+Added `requireAuth()` as an auth guard, called at the top of every
+protected page (`dashboard.html`, `clients.html`, `profile.html`)
+before the page body renders, so an unauthenticated visitor is
+redirected to `login.html` instead of seeing protected content.
+Wired up `Log out` to clear the session.
 
-## Entry 5: Persistent Background Clocks
+### Entry 4 — Clients CRUD against a mock API
 
-- **Objective**: Building background interval countdown alerts.
-- **Prompt**: "Create a native browser background timeout worker inside an object template scope that acts as a secure tracking alarm system alerting individuals even if other operational modals are modified."
-- **Tool**: Claude 3.5 Sonnet
-- **Outcome**: Adapted into our Shadow Alarm system. It leverages memory closures effectively to maintain execution contexts alive.
+Built `api.js` as a stand-in backend: `apiGetClients`, `apiAddClient`
+and `apiDeleteClient`, each returning a promise after a short delay to
+mimic real network latency. `clients.js` renders a loading state while
+the "request" is in flight, validates the add-client form, and asks
+for confirmation before deleting a record.
+
+### Entry 5 — Polish and documentation
+
+Added the light/dark theme toggle (`crm_theme`), derived a couple of
+dashboard numbers from live client data instead of static copy, fixed
+the theme icon not matching the stored theme on first load, and wrote
+the README covering structure, storage keys and how to run the app.
