@@ -1,27 +1,68 @@
 # 10x-crm-nora-ashortia
 
-# Shinobi CRM - Premium Operations Management Platform
+# 10x CRM
 
-## About
-
-Shinobi CRM is a highly personalized client relationship platform engineered specifically for tactical commanders managing active ninja divisions across the Hidden Leaf and individual combat sectors. The software streamlines contract workflows, asset validation tracking, and operational resource evaluations.
+A lightweight, front-end-only CRM built with plain HTML, CSS and
+JavaScript — no build step, no framework. Data is stored in the
+browser's `localStorage`, and a small mock API layer (`js/api.js`)
+simulates real network calls (loading delays, promises) so the app
+behaves the way it would against a real backend.
 
 ## Features
 
-- **Secure Access Control Guards**: Autonomous route interceptors processing valid tokens.
-- **Dynamic Clock & Synchronization Feed**: Live real-time operational temporal metric logs.
-- **Advanced State Query Engines**: Complex combinations of filter queries, structural multi-sort parameters, and state manipulation chains.
-- **Secure Validation Forms**: Full contextual alert traps built cleanly into input controllers.
-- **Field Alert Triggers**: Scheduled internal browser background microtasks for callback protocols.
+- **Sign up** — name, email and password, with client-side validation
+  (valid email, 6+ character password) and toast feedback.
+- **Login** — checks credentials against stored accounts; wrong
+  email/password shows an "Invalid email or password" message.
+- **Auth guard** — `dashboard.html`, `clients.html` and `profile.html`
+  all call `requireAuth()` before rendering; without a session you are
+  redirected straight to `login.html`. `Log out` clears the session.
+- **Clients** — fetched through the mock API with a loading state,
+  rendered with plain JS. Add a client (validated, `POST`-style call)
+  or delete one with a confirmation prompt (`DELETE`-style call).
+- **Theme toggle** — light/dark mode, persisted per browser.
 
-## Tech Stack
+## Project structure
 
-- Vanilla HTML5 Semantic Nodes
-- Dynamic Variable Responsive Light/Dark CSS Grid Layout
-- Native Vanilla JavaScript ES6 Engine Modules
+```
+10x-crm/
+├── index.html        redirects to dashboard or login based on session
+├── signup.html
+├── login.html
+├── dashboard.html
+├── clients.html
+├── profile.html
+├── css/
+│   └── style.css      shared design tokens + component styles
+├── js/
+│   ├── ui.js           toast notifications
+│   ├── theme.js         crm_theme light/dark handling
+│   ├── auth.js          crm_users / crm_session, signup, login, guard, logout
+│   ├── api.js           mock API + crm_clients storage
+│   ├── clients.js        clients page logic (fetch, add, delete)
+│   ├── dashboard.js      dashboard stats
+│   └── profile.js        profile page logic
+├── README.md
+└── ai-log.md
+```
 
-## Test Account
+## Storage keys
 
-- **Email**: demo@test.com
-- **Password**: demo1234
-  _Alternatively, use the on-board creation interface to manifest custom parameters._
+| Key           | Shape                                    | Purpose                      |
+| ------------- | ---------------------------------------- | ---------------------------- |
+| `crm_users`   | `[{ name, email, password }]`            | Accounts created via sign up |
+| `crm_session` | `{ name, email, loggedInAt }`            | The currently logged-in user |
+| `crm_clients` | `[{ id, name, company, value, status }]` | Client records               |
+| `crm_theme`   | `"light"` \| `"dark"`                    | UI theme preference          |
+
+## Running it
+
+No build tools required. Open `index.html` in a browser, or serve the
+folder with any static file server, e.g.:
+
+```
+npx serve .
+```
+
+Then sign up for an account and sign in — the app will seed a handful
+of sample clients on first load of the clients page.
