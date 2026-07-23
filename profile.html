@@ -3,145 +3,153 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Ninja Identity Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile · 10x CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+   href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+   rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/guard.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+   requireAuth();
+  </script>
  </head>
  <body>
-  <div class="app-container">
+  <div id="toast-holder"></div>
+
+  <div class="app">
    <aside class="sidebar">
-    <h2 class="sidebar-logo">
-     <span class="anime-brand-text">🍥 Shinobi CRM</span>
-    </h2>
-    <ul class="nav-menu">
-     <li class="nav-item"><a href="dashboard.html">🏠 Dashboard</a></li>
-     <li class="nav-item"><a href="clients.html">👥 Clients Base</a></li>
-     <li class="nav-item active">
-      <a href="profile.html">👤 Ninja Profile</a>
-     </li>
-    </ul>
-    <div class="sidebar-footer">
-     <button
-      id="themeToggleBtn"
-      class="btn btn-primary"
-      style="background: #4c6ef5"
+    <div class="brand">
+     <div class="brand-mark">10x</div>
+     <div class="brand-name">10x<span>CRM</span></div>
+    </div>
+    <nav class="nav">
+     <a class="nav-item" href="dashboard.html"
+      ><span class="ic">D</span>Dashboard</a
      >
-      ☯ Theme
-     </button>
-     <button id="logoutBtn" class="btn btn-danger">🚪 Log Out</button>
+     <a class="nav-item" href="clients.html"
+      ><span class="ic">C</span>Clients</a
+     >
+     <a class="nav-item active" href="profile.html"
+      ><span class="ic">P</span>Profile</a
+     >
+    </nav>
+    <div class="sidebar-foot">
+     <button class="logout-btn" onclick="handleLogout()">Log out</button>
     </div>
    </aside>
 
-   <main class="main-content">
-    <!-- P5.1 Avatar Initials Info block [source: 1] -->
-    <div
-     class="dashboard-header"
-     style="gap: 20px; justify-content: flex-start"
-    >
-     <div
-      id="avatarBadge"
-      style="
-       width: 70px;
-       height: 70px;
-       background: var(--accent-color);
-       color: white;
-       border-radius: 50%;
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       font-size: 1.8rem;
-       font-weight: bold;
-       box-shadow: var(--shadow-md);
-      "
-     ></div>
+   <main class="main">
+    <header class="topbar">
      <div>
-      <h2 id="profTitleName">Master</h2>
-      <p id="profEmailMeta" style="color: var(--text-muted)"></p>
-      <small id="profJoinedMeta" style="color: var(--accent-color)"></small>
+      <div class="page-title">Profile</div>
+      <div class="page-sub">Your account</div>
      </div>
-    </div>
+     <div class="top-actions">
+      <button
+       class="theme-toggle"
+       id="theme-toggle-btn"
+       onclick="toggleTheme()"
+      >
+       🌙
+      </button>
+      <div class="avatar" id="topbar-avatar">–</div>
+     </div>
+    </header>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem">
-     <!-- Section A: Edit Profile [source: 1] -->
-     <div class="stat-card">
-      <h3>Modify Agent Credentials</h3>
-      <form id="editProfileForm" style="margin-top: 1rem" novalidate>
-       <div class="form-group">
-        <label>Agent Name</label>
-        <input type="text" id="profNameInput" class="form-control" />
-        <span class="error-text" id="profNameError"></span>
-       </div>
-       <div class="form-group">
-        <label>Brigade Affiliation</label>
-        <input type="text" id="profCompanyInput" class="form-control" />
-       </div>
-       <button type="submit" class="btn btn-primary">Save Changes</button>
-      </form>
+    <div class="content">
+     <!-- 1. პროფილის თავფურცელი -->
+     <div class="profile-head">
+      <div class="p-avatar" id="p-avatar">–</div>
+      <div>
+       <div class="p-name" id="p-name">–</div>
+       <div class="p-role">Sales lead</div>
+       <div class="badge">S-tier this quarter</div>
+      </div>
      </div>
 
-     <!-- Section B: Change Password [source: 1] -->
-     <div class="stat-card">
-      <h3>Alter Cipher Key (Password)</h3>
-      <form id="changePasswordForm" style="margin-top: 1rem" novalidate>
-       <div class="form-group">
-        <label>Current Cipher</label>
-        <input
-         type="password"
-         id="currPass"
-         class="form-control"
-         placeholder="••••••••"
-        />
-        <span class="error-text" id="currPassError"></span>
+     <!-- 2. ორ-სვეტიანი ბადე -->
+     <div class="profile-layout">
+      <!-- მარცხენა სვეტი: Details, Quarterly goal და Danger Zone -->
+      <div class="profile-col-main">
+       <div class="card">
+        <div class="sec-title">Details</div>
+        <div class="profile-grid">
+         <div class="field">
+          <label>Email</label>
+          <div class="val" id="p-email">–</div>
+         </div>
+         <div class="field">
+          <label>Signed in since</label>
+          <div class="val" id="p-joined">–</div>
+         </div>
+        </div>
        </div>
-       <div class="form-group">
-        <label>New Seal Cipher</label>
-        <input
-         type="password"
-         id="newPass"
-         class="form-control"
-         placeholder="••••••••"
-        />
-        <span class="error-text" id="newPassError"></span>
-       </div>
-       <div class="form-group">
-        <label>Verify New Seal</label>
-        <input
-         type="password"
-         id="confNewPass"
-         class="form-control"
-         placeholder="••••••••"
-        />
-        <span class="error-text" id="confNewPassError"></span>
-       </div>
-       <button
-        type="submit"
-        class="btn btn-primary"
-        style="background: #4263eb"
-       >
-        Change Password
-       </button>
-      </form>
-     </div>
-    </div>
 
-    <!-- Section C: Reset System database [source: 1] -->
-    <div
-     class="stat-card"
-     style="margin-top: 2rem; border-color: var(--status-lost-text)"
-    >
-     <h3 style="color: var(--status-lost-text)">Danger Zone (Scroll Wiping)</h3>
-     <p
-      style="color: var(--text-muted); font-size: 0.9rem; margin: 5px 0 15px 0"
-     >
-      This clear out purges all custom operations states and re-pulls original
-      baseline data nodes.
-     </p>
-     <button class="btn btn-danger" id="resetDataBtn" style="width: auto">
-      🔥 Reset CRM Data
-     </button>
+       <div class="card">
+        <div class="sec-title">Quarterly goal</div>
+        <div
+         style="
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          font-weight: 700;
+         "
+        >
+         <span>$96,000 of $120,000</span><span>80%</span>
+        </div>
+        <div class="pbar"><i style="width: 80%"></i></div>
+       </div>
+
+       <!-- Danger Zone ჩამოტანილია მარცხნივ Goal-ის ქვემოთ -->
+       <div class="card">
+        <div class="sec-title">Danger Zone</div>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+         Clear active clients cache and restore application state.
+        </p>
+        <button type="button" class="btn ghost" id="resetDataBtn">
+         Reset Operational Data
+        </button>
+       </div>
+      </div>
+
+      <!-- მარჯვენა სვეტი: მხოლოთ Change Password -->
+      <div class="profile-col-side">
+       <div class="card">
+        <div class="sec-title">Change Password</div>
+        <form id="changePasswordForm">
+         <label class="f">Current Password</label>
+         <input type="password" id="currPass" placeholder="••••••••" required />
+         <div class="field-error show" id="currPassError"></div>
+
+         <label class="f">New Password</label>
+         <input type="password" id="newPass" placeholder="••••••••" required />
+         <div class="field-error show" id="newPassError"></div>
+
+         <label class="f">Confirm New Password</label>
+         <input
+          type="password"
+          id="confNewPass"
+          placeholder="••••••••"
+          required
+         />
+         <div class="field-error show" id="confNewPassError"></div>
+
+         <button type="submit" class="btn" style="margin-top: 8px">
+          Update Password
+         </button>
+        </form>
+       </div>
+      </div>
+     </div>
     </div>
    </main>
   </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/profile.js"></script>
  </body>
 </html>
