@@ -1,133 +1,132 @@
-// js/profile.js
-document.addEventListener("DOMContentLoaded", () => {
-    const session = JSON.parse(localStorage.getItem("crm_session")); // [source: 1]
-    let users = JSON.parse(localStorage.getItem("crm_users") || "[]"); // [source: 1]
-    let currentUser = users.find((u) => u.id === session?.userId);
+// profile.js — fills the profile page and handles account operations
 
-    if (!currentUser) return;
+function initProfile() {
+    const session = getSession();
+    if (!session) return;
 
-    // Trigger visual components parsing [source: 1]
-    syncProfileUI();
+    // მომხმარებლებისა და მიმდინარე იუზერის წამოღება localStorage-იდან
+    let users = JSON.parse(localStorage.getItem("crm_users") || "[]");
+    const currentUser = users.find((u) => u.id === session.userId) || {
+        ...session,
+        password: session.password || "",
+    };
 
-    function syncProfileUI() {
-        // P5.1 - Initials extractor string operation logic [source: 1]
-        const names = currentUser.fullName.split(" ");
-        const initials = names
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2); // [source: 1]
-        document.getElementById("avatarBadge").textContent = initials; // [source: 1]
+    // 1. პროფილის მონაცემების ასახვა UI-ში
+    const initials = (session.name || "User")
+        .split(" ")
+        .map((p) => p[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
 
-        document.getElementById("profTitleName").textContent =
-            currentUser.fullName;
-        document.getElementById("profEmailMeta").textContent =
-            `📧 Connection: ${currentUser.email} | 🏛 Division: ${currentUser.company}`;
-        document.getElementById("profJoinedMeta").textContent =
-            `Inducted: ${new Date(currentUser.createdAt).toLocaleDateString()}`;
+    const avatarEl = document.getElementById("topbar-avatar");
+    const pAvatarEl = document.getElementById("p-avatar");
+    const pNameEl = document.getElementById("p-name");
+    const pEmailEl = document.getElementById("p-email");
+    const pJoinedEl = document.getElementById("p-joined");
 
-        // Feed forms inputs [source: 1]
-        document.getElementById("profNameInput").value = currentUser.fullName;
-        document.getElementById("profCompanyInput").value = currentUser.company;
+    if (avatarEl) avatarEl.textContent = initials;
+    if (pAvatarEl) pAvatarEl.textContent = initials;
+    if (pNameEl) pNameEl.textContent = session.name || "User";
+    if (pEmailEl) pEmailEl.textContent = session.email || "—";
+    if (pJoinedEl) {
+        pJoinedEl.textContent = session.loggedInAt
+            ? new Date(session.loggedInAt).toLocaleDateString()
+            : new Date().toLocaleDateString();
     }
 
-    // --- CONTROLLER A: SAVE PROFILE CHANGES --- [source: 1]
-    document
-        .getElementById("editProfileForm")
-        .addEventListener("submit", (e) => {
-            e.preventDefault(); // [source: 1]
-            document.getElementById("profNameError").textContent = "";
+    // 2. CHANGE PASSWORD VALIDATION BLOCK
+    const changePasswordForm = document.getElementById("changePasswordForm");
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener("submit", (e) => {
+            e.preventDefault();
 
-            const updatedName = document
-                .getElementById("profNameInput")
-                .value.trim(); // [source: 1]
-            const updatedCompany = document
-                .getElementById("profCompanyInput")
-                .value.trim(); // [source: 1]
-
-            if (updatedName.length < 3) {
-                document.getElementById("profNameError").textContent =
-                    "Full name must be at least 3 characters"; // [source: 1]
-                return;
-            }
-
-            // Mutation operations on master storage registry [source: 1]
-            currentUser.fullName = updatedName; // [source: 1]
-            currentUser.company = updatedCompany || "Independent Ninja"; // [source: 1]
-
-            users = users.map((u) =>
-                u.id === currentUser.id ? currentUser : u,
-            ); // [source: 1]
-            localStorage.setItem("crm_users", JSON.stringify(users)); // [source: 1]
-
-            showToast("Profile updated ✓", "success"); // [source: 1]
-            syncProfileUI(); // Re-render visual assets immediately [source: 1]
-        });
-
-    // --- CONTROLLER B: CHANGE PASSWORD VALIDATION BLOCK --- [source: 1]
-    document
-        .getElementById("changePasswordForm")
-        .addEventListener("submit", (e) => {
-            e.preventDefault(); // [source: 1]
+            // წინა შეცდომების გასუფთავება
             document
-                .querySelectorAll(".error-text")
+                .querySelectorAll(".field-error")
                 .forEach((el) => (el.textContent = ""));
 
-            const currPass = document.getElementById("currPass").value; // [source: 1]
-            const newPass = document.getElementById("newPass").value; // [source: 1]
-            const confNewPass = document.getElementById("confNewPass").value; // [source: 1]
+            const currPassEl = document.getElementById("currPass");
+            const newPassEl = document.getElementById("newPass");
+            const confNewPassEl = document.getElementById("confNewPass");
+
+            const currPass = currPassEl ? currPassEl.value : "";
+            const newPass = newPassEl ? newPassEl.value : "";
+            const confNewPass = confNewPassEl ? confNewPassEl.value : "";
 
             let valid = true;
+
             if (currPass !== currentUser.password) {
-                document.getElementById("currPassError").textContent =
-                    "Current password is incorrect"; // [source: 1]
+                const err = document.getElementById("currPassError");
+                if (err) err.textContent = "Current password is incorrect";
                 valid = false;
             }
 
-            const hasLetter = /[a-zA-Z]/.test(newPass); // [source: 1]
-            const hasNumber = /[0-9]/.test(newPass); // [source: 1]
+            const hasLetter = /[a-zA-Z]/.test(newPass);
+            const hasNumber = /[0-9]/.test(newPass);
+
             if (newPass.length < 8 || !hasLetter || !hasNumber) {
-                document.getElementById("newPassError").textContent =
-                    "Password must be at least 8 characters and contain a letter and a number"; // [source: 1]
+                const err = document.getElementById("newPassError");
+                if (err) {
+                    err.textContent =
+                        "Password must be at least 8 characters and contain a letter and a number";
+                }
                 valid = false;
             } else if (newPass === currentUser.password) {
-                document.getElementById("newPassError").textContent =
-                    "New password must be different from the current one"; // [source: 1]
+                const err = document.getElementById("newPassError");
+                if (err) {
+                    err.textContent =
+                        "New password must be different from current one";
+                }
                 valid = false;
             }
 
             if (newPass !== confNewPass) {
-                document.getElementById("confNewPassError").textContent =
-                    "Passwords do not match"; // [source: 1]
+                const err = document.getElementById("confNewPassError");
+                if (err) err.textContent = "Passwords do not match";
                 valid = false;
             }
 
-            if (!valid) return; // [source: 1]
+            if (!valid) return;
 
-            // Write mutated parameters [source: 1]
-            currentUser.password = newPass; // [source: 1]
+            // პაროლის განახლება
+            currentUser.password = newPass;
             users = users.map((u) =>
                 u.id === currentUser.id ? currentUser : u,
-            ); // [source: 1]
-            localStorage.setItem("crm_users", JSON.stringify(users)); // [source: 1]
+            );
+            localStorage.setItem("crm_users", JSON.stringify(users));
 
-            document.getElementById("changePasswordForm").reset();
-            showToast("Password changed ✓", "success"); // [source: 1]
+            // სესიის მონაცემების განახლებაც (თუ სესიაშიც ინახავთ პაროლს)
+            session.password = newPass;
+            localStorage.setItem("crm_session", JSON.stringify(session));
+
+            changePasswordForm.reset();
+
+            if (typeof showToast === "function") {
+                showToast("Password changed successfully ✓", "success");
+            }
         });
+    }
 
-    // --- CONTROLLER C: HARD CLEAR PURGE DATA SCROLL --- [source: 1]
-    document.getElementById("resetDataBtn").addEventListener("click", () => {
-        if (
-            confirm(
-                "Are you absolutely certain you desire to wipe active operational state caches? Profiles will remain intact.",
-            )
-        ) {
-            // [source: 1]
-            localStorage.removeItem("crm_clients"); // Remove target client state node only [source: 1]
-            showToast("State wiped. Re-loading scrolls...", "success"); // [source: 1]
-            setTimeout(() => {
-                window.location.href = "clients.html";
-            }, 1000); // Redirect triggers fresh reload cycle [source: 1]
-        }
-    });
-});
+    // 3. RESET DATA BLOCK
+    const resetDataBtn = document.getElementById("resetDataBtn");
+    if (resetDataBtn) {
+        resetDataBtn.addEventListener("click", () => {
+            if (
+                confirm(
+                    "Are you sure you want to clear active client data? Profile settings will remain intact.",
+                )
+            ) {
+                localStorage.removeItem("crm_clients");
+                if (typeof showToast === "function") {
+                    showToast("Client data wiped. Reloading...", "success");
+                }
+                setTimeout(() => {
+                    window.location.href = "clients.html";
+                }, 800);
+            }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", initProfile);
