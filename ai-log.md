@@ -1,42 +1,25 @@
-# AI development log
+# AI Development Log
 
-A short log of the work sessions that built this project.
+A log of the AI collaboration sessions used to build this project.
 
 ---
 
-### Entry 1 — Scaffolding and design system
+### Entry 1 — Project Scaffolding & Design System
 
-Set up the project structure (`css/`, `js/`) and ported the approved
-anime-style dashboard design into a shared `style.css` with CSS
-variables, so every page (auth screens, dashboard, clients, profile)
-draws from the same palette, type scale and components.
+Set up the base file structure (`css/`, `js/`) and established a clean, modern design system in `css/style.css`. Defined global CSS custom variables for themes, layout utilities, typography, and reusable component styles across all pages.
 
-### Entry 2 — Accounts and sessions
+### Entry 2 — Authentication & Session Logic
 
-Implemented `auth.js`: `crm_users` for stored accounts, `crm_signup`
-validation (valid email, 6+ character password), and `crm_session`
-for the logged-in user. Built the sign up and login pages, including
-the "Invalid email or password" message on bad credentials.
+Implemented core authentication flows in `js/auth.js`. Added client-side form validation for registration, user account storage (`crm_users`), credential verification on login, and active session tracking (`crm_session`) with proper error feedback.
 
-### Entry 3 — Route protection
+### Entry 3 — Route Protection & Auth Guard
 
-Added `requireAuth()` as an auth guard, called at the top of every
-protected page (`dashboard.html`, `clients.html`, `profile.html`)
-before the page body renders, so an unauthenticated visitor is
-redirected to `login.html` instead of seeing protected content.
-Wired up `Log out` to clear the session.
+Added the `requireAuth()` route guard function to protect internal pages (`dashboard.html`, `clients.html`, `profile.html`). Unauthenticated visitors are automatically redirected to `login.html`. Implemented logout functionality to destroy the active session.
 
-### Entry 4 — Clients CRUD against a mock API
+### Entry 4 — Mock API & Client CRUD Operations
 
-Built `api.js` as a stand-in backend: `apiGetClients`, `apiAddClient`
-and `apiDeleteClient`, each returning a promise after a short delay to
-mimic real network latency. `clients.js` renders a loading state while
-the "request" is in flight, validates the add-client form, and asks
-for confirmation before deleting a record.
+Created `js/api.js` to simulate an asynchronous backend with network delays, Promise handling, and error management (`try/catch`). Built client management logic in `js/clients.js` including list rendering, add-client validation, and deletion confirmation.
 
-### Entry 5 — Polish and documentation
+### Entry 5 — Dynamic Dashboard, Polish & Documentation
 
-Added the light/dark theme toggle (`crm_theme`), derived a couple of
-dashboard numbers from live client data instead of static copy, fixed
-the theme icon not matching the stored theme on first load, and wrote
-the README covering structure, storage keys and how to run the app.
+Integrated dynamic metrics, live clock, and pipeline stats on the dashboard. Implemented persistent dark/light theme switching (`crm_theme`), fixed state persistence bugs, and completed project documentation (`README.md`, `glossary.md`, `research-note.md`).

@@ -2,51 +2,47 @@
 
 # 10x CRM
 
-A lightweight, front-end-only CRM built with plain HTML, CSS and
-JavaScript — no build step, no framework. Data is stored in the
-browser's `localStorage`, and a small mock API layer (`js/api.js`)
-simulates real network calls (loading delays, promises) so the app
-behaves the way it would against a real backend.
+A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — no build step, no framework. Data is stored in the browser's `localStorage`, and a small mock API layer (`js/api.js`) simulates real network calls (loading delays, promises, error handling) so the app behaves the way it would against a real backend.
 
 ## Features
 
-- **Sign up** — name, email and password, with client-side validation
-  (valid email, 6+ character password) and toast feedback.
-- **Login** — checks credentials against stored accounts; wrong
-  email/password shows an "Invalid email or password" message.
-- **Auth guard** — `dashboard.html`, `clients.html` and `profile.html`
-  all call `requireAuth()` before rendering; without a session you are
-  redirected straight to `login.html`. `Log out` clears the session.
-- **Clients** — fetched through the mock API with a loading state,
-  rendered with plain JS. Add a client (validated, `POST`-style call)
-  or delete one with a confirmation prompt (`DELETE`-style call).
-- **Theme toggle** — light/dark mode, persisted per browser.
+- **Sign up** — Client-side validation (valid email, 6+ character password) with specific error messages and toast feedback.
+- **Login** — Validates credentials against stored accounts; incorrect email/password shows an "Invalid email or password" error.
+- **Auth Guard** — Protected pages (`dashboard.html`, `clients.html`, `profile.html`) call `requireAuth()` before rendering. Unauthenticated users are redirected to `login.html`. `Log out` clears the session.
+- **Dashboard** — Includes a live clock (`liveClock`), personalized welcome message, 4 dynamic stats (Total Clients, Active Clients, Revenue, Recent Activity), interactive pipeline, and flicker-free DOM rendering.
+- **Clients Management**:
+    - Mock API integration with loading states and `try/catch` error handling (with Retry options).
+    - Clean table layout for client records with status badges.
+    - Client details modal, dated notes, and native `setTimeout` reminder notifications.
+    - Form validation for adding clients and confirmation prompts before deletion (`DELETE`-style call).
+- **Profile** — Edit profile details, update password (invalidates old credentials), and option to reset application data.
+- **Theme Toggle** — Persistent light/dark mode driven by CSS custom variables (`--cream`, `--panel`, `--ink`, `--line`).
 
-## Project structure
+## Project Structure
 
-```
 10x-crm/
-├── index.html        redirects to dashboard or login based on session
+├── index.html redirects to dashboard or login based on session
 ├── signup.html
 ├── login.html
 ├── dashboard.html
 ├── clients.html
 ├── profile.html
 ├── css/
-│   └── style.css      shared design tokens + component styles
+│ └── style.css global design tokens, dynamic theme variables & component styles
 ├── js/
-│   ├── ui.js           toast notifications
-│   ├── theme.js         crm_theme light/dark handling
-│   ├── auth.js          crm_users / crm_session, signup, login, guard, logout
-│   ├── api.js           mock API + crm_clients storage
-│   ├── clients.js        clients page logic (fetch, add, delete)
-│   ├── dashboard.js      dashboard stats
-│   └── profile.js        profile page logic
+│ ├── ui.js toast notifications, modals & UI helpers
+│ ├── theme.js dark/light theme toggle controller
+│ ├── auth.js user registration, authentication guard, session management
+│ ├── api.js mock API layer, error handling & localStorage fallback sync
+│ ├── clients.js CRUD actions and client modal logic
+│ ├── dashboard.js live clock, metrics calculation, recent activity feed
+│ └── profile.js profile management, password changes, data reset
 ├── README.md
-└── ai-log.md
-```
+├── ai-log.md AI development log & session entries (5 entries)
+├── glossary.md project technical terms and terminology definitions
+└── research-note.md architecture overview, technical decisions & implementation details
 
-## Storage keys
+## Storage Keys
 
 | Key           | Shape                                    | Purpose                      |
 | ------------- | ---------------------------------------- | ---------------------------- |
@@ -55,14 +51,10 @@ behaves the way it would against a real backend.
 | `crm_clients` | `[{ id, name, company, value, status }]` | Client records               |
 | `crm_theme`   | `"light"` \| `"dark"`                    | UI theme preference          |
 
-## Running it
+## Running the Project
 
-No build tools required. Open `index.html` in a browser, or serve the
-folder with any static file server, e.g.:
+No build tools or installation required. Open `index.html` directly in any web browser, or serve the directory using a static local server:
 
-```
+```bash
 npx serve .
 ```
-
-Then sign up for an account and sign in — the app will seed a handful
-of sample clients on first load of the clients page.
