@@ -1454,3 +1454,28 @@ tbody tr:hover .status {
     color: var(--coral);
     border-color: var(--coral-soft);
 }
+
+/* Filter Pills Active Dynamic Colors */
+.client-filter-btn.active[data-status="all"] {
+    background: var(--coral) !important;
+    color: #fff !important;
+    border-color: var(--coral) !important;
+}
+
+.client-filter-btn.active[data-status="new"] {
+    background: var(--sun-soft) !important;
+    color: #b8860b !important;
+    border-color: var(--sun-soft) !important;
+}
+
+.client-filter-btn.active[data-status="active"] {
+    background: var(--teal-soft) !important;
+    color: var(--teal) !important;
+    border-color: var(--teal-soft) !important;
+}
+
+.client-filter-btn.active[data-status="paused"] {
+    background: var(--coral-soft) !important;
+    color: var(--coral) !important;
+    border-color: var(--coral-soft) !important;
+}

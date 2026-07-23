@@ -2,6 +2,9 @@
 
 const statusLabel = { new: "New", active: "Active", paused: "Paused" };
 let currentModalClientId = null;
+let currentFilter = "all";
+let currentSort = "newest";
+let allLoadedClients = [];
 
 function rowHtml(client) {
     return `
@@ -21,19 +24,62 @@ function rowHtml(client) {
 }
 
 function renderClients(list) {
+    allLoadedClients = list;
+    filterAndSortClients();
+}
+
+function filterAndSortClients() {
     const tbody = document.getElementById("client-rows");
-    if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No clients yet — add your first one.</div></td></tr>`;
+    if (!tbody) return;
+
+    const searchInput = document.getElementById("client-search-input");
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    // 1. Filter by status
+    let filtered = allLoadedClients.filter((client) => {
+        if (currentFilter === "all") return true;
+        return client.status === currentFilter;
+    });
+
+    // 2. Search by name or company
+    if (query !== "") {
+        filtered = filtered.filter(
+            (client) =>
+                (client.name && client.name.toLowerCase().includes(query)) ||
+                (client.company &&
+                    client.company.toLowerCase().includes(query)),
+        );
+    }
+
+    // 3. (Sorting)
+    filtered.sort((a, b) => {
+        if (currentSort === "name") {
+            return (a.name || "").localeCompare(b.name || "");
+        } else if (currentSort === "value") {
+            const valA =
+                parseFloat((a.value || "0").replace(/[^0-9.-]+/g, "")) || 0;
+            const valB =
+                parseFloat((b.value || "0").replace(/[^0-9.-]+/g, "")) || 0;
+            return valB - valA;
+        } else {
+            // Newest Arrived (By: ID)
+            return (b.id || 0) - (a.id || 0);
+        }
+    });
+
+    if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No matching clients found.</div></td></tr>`;
         return;
     }
-    tbody.innerHTML = list.map(rowHtml).join("");
+
+    tbody.innerHTML = filtered.map(rowHtml).join("");
 
     // Bind clicking on rows to open a modal (unless we click on delete or select)
     tbody.querySelectorAll("tr").forEach((tr, index) => {
         tr.addEventListener("click", (e) => {
             if (e.target.closest(".del-btn") || e.target.closest("select"))
                 return;
-            openClientModal(list[index].id);
+            openClientModal(filtered[index].id);
         });
     });
 }
@@ -151,6 +197,41 @@ function renderNotes(notes) {
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
     loadClients();
+
+    // Search Input Event
+    const searchInput = document.getElementById("client-search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            filterAndSortClients();
+        });
+    }
+
+    // Filter Pills Buttons Click Event
+    const pillButtons = document.querySelectorAll(".client-filter-btn");
+    pillButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            pillButtons.forEach((b) => {
+                b.classList.remove("active");
+                b.style.background = "var(--panel)";
+                b.style.color = "var(--muted)";
+            });
+            btn.classList.add("active");
+            btn.style.background = "var(--coral)";
+            btn.style.color = "#fff";
+
+            currentFilter = btn.dataset.status;
+            filterAndSortClients();
+        });
+    });
+
+    // Sort Dropdown Change Event
+    const sortSelect = document.getElementById("client-sort-select");
+    if (sortSelect) {
+        sortSelect.addEventListener("change", (e) => {
+            currentSort = e.target.value;
+            filterAndSortClients();
+        });
+    }
 
     // Close with X button and click on modal background
     document
