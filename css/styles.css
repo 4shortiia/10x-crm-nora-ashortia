@@ -1331,7 +1331,7 @@ tbody tr:hover .status {
 }
 
 .meta-badge {
-    background: var(--coral-soft);
+    background: rgb(63, 9, 31);
     color: var(--coral);
     padding: 10px 14px;
     border-radius: 30px;
