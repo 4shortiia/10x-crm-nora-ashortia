@@ -4,14 +4,14 @@ function initProfile() {
     const session = getSession();
     if (!session) return;
 
-    // მომხმარებლებისა და მიმდინარე იუზერის წამოღება localStorage-იდან
+    // Retrieving users and the current user from localStorage
     let users = JSON.parse(localStorage.getItem("crm_users") || "[]");
     const currentUser = users.find((u) => u.id === session.userId) || {
         ...session,
         password: session.password || "",
     };
 
-    // 1. პროფილის მონაცემების ასახვა UI-ში
+    // 1. Displaying profile data in the UI
     const initials = (session.name || "User")
         .split(" ")
         .map((p) => p[0])
@@ -41,7 +41,7 @@ function initProfile() {
         changePasswordForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            // წინა შეცდომების გასუფთავება
+            // Clearing previous errors
             document
                 .querySelectorAll(".field-error")
                 .forEach((el) => (el.textContent = ""));
@@ -89,14 +89,14 @@ function initProfile() {
 
             if (!valid) return;
 
-            // პაროლის განახლება
+            // Password update
             currentUser.password = newPass;
             users = users.map((u) =>
                 u.id === currentUser.id ? currentUser : u,
             );
             localStorage.setItem("crm_users", JSON.stringify(users));
 
-            // სესიის მონაცემების განახლებაც (თუ სესიაშიც ინახავთ პაროლს)
+            // Refresh session data (if you also save the password in the session)
             session.password = newPass;
             localStorage.setItem("crm_session", JSON.stringify(session));
 

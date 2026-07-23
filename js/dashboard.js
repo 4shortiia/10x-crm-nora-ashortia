@@ -8,15 +8,15 @@ function initClock() {
             liveClockEl.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
         }
     };
-    updateClock(); // დაუყოვნებლივ გამოჩნდეს
-    setInterval(updateClock, 1000); // ყოველ 1 წამში განახლება
+    updateClock(); // appear immediately
+    setInterval(updateClock, 1000); // Update every 1 second
 }
 
 async function initDashboard() {
-    // 1. საათის გაშვება
+    // 1. Start the clock
     initClock();
 
-    // 2. მომხმარებლის პროფილის განახლება Topbar-ში
+    // 2. Updating the user profile in Topbar
     try {
         if (typeof getSession === "function") {
             const session = getSession();
@@ -41,7 +41,7 @@ async function initDashboard() {
         console.error("Session error:", e);
     }
 
-    // 3. კლიენტების წამოღება და სტატისტიკის განახლება
+    // 3. Acquiring clients and updating statistics
     try {
         let clients = [];
 
@@ -64,7 +64,7 @@ async function initDashboard() {
         );
         if (statActiveEl) statActiveEl.textContent = activeClients.length;
 
-        // ბ) Revenue-ს განახლება (თუ კლიენტებს აქვთ value ველი)
+        // b) Update Revenue (if customers have a value field)
         const statRevenueEl = document.getElementById("stat-revenue");
         if (statRevenueEl) {
             const totalRevenue = clients.reduce((sum, c) => {
@@ -79,14 +79,14 @@ async function initDashboard() {
             }
         }
 
-        // გ) Recent Activity-ს დინამიკური რენდერი
+        // c) Recent Activity
         renderRecentActivity(clients);
     } catch (error) {
         console.error("Error loading dashboard metrics:", error);
     }
 }
 
-// Recent Activity სექციის დარენდერება
+// Recent Activity
 function renderRecentActivity(clients) {
     const activityCard = document.getElementById("recent-activity-card");
     if (!activityCard) return;
@@ -99,7 +99,7 @@ function renderRecentActivity(clients) {
         return;
     }
 
-    // იღებს ბოლო 4 დამატებულ კლიენტს
+    // Gets the last 4 added clients
     const recentClients = [...clients].reverse().slice(0, 4);
 
     let html = `<div class="sec-title">Recent activity</div>`;
