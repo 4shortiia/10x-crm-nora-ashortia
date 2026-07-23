@@ -3,111 +3,122 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - Shinobi CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · 10x CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+   href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+   rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/guard.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+   requireAuth();
+  </script>
  </head>
  <body>
-  <div class="app-container">
-   <!-- P0.2 - Sidebar Navigation Structure [source: 1] -->
+  <div class="app">
    <aside class="sidebar">
-    <h2 class="sidebar-logo">
-     <span class="anime-brand-text">🍥 Shinobi CRM</span>
-    </h2>
-    <ul class="nav-menu">
-     <li class="nav-item active"><a href="dashboard.html">🏠 Dashboard</a></li>
-     <li class="nav-item"><a href="clients.html">👥 Clients Base</a></li>
-     <li class="nav-item"><a href="profile.html">👤 Ninja Profile</a></li>
-    </ul>
-    <div class="sidebar-footer">
-     <button
-      id="themeToggleBtn"
-      class="btn btn-primary"
-      style="background: #4c6ef5"
+    <div class="brand">
+     <div class="brand-mark">10x</div>
+     <div class="brand-name">10x<span>CRM</span></div>
+    </div>
+    <nav class="nav">
+     <a class="nav-item active" href="dashboard.html"
+      ><span class="ic">D</span>Dashboard</a
      >
-      ☯ Theme
-     </button>
-     <button id="logoutBtn" class="btn btn-danger">🚪 Log Out</button>
+     <a class="nav-item" href="clients.html"
+      ><span class="ic">C</span>Clients</a
+     >
+     <a class="nav-item" href="profile.html"
+      ><span class="ic">P</span>Profile</a
+     >
+    </nav>
+    <div class="sidebar-foot">
+     <button class="logout-btn" onclick="handleLogout()">Log out</button>
     </div>
    </aside>
 
-   <main class="main-content">
-    <header class="dashboard-header">
-     <div>
-      <h1 id="welcomeGreeting">Welcome back!</h1>
-      <p style="color: var(--text-muted); margin-top: 5px">
-       Your tactical field evaluation metrics.
-      </p>
+   <main class="main">
+    <header class="topbar">
+     <div class="topbar-title-wrap">
+      <div>
+       <div class="page-title">Dashboard</div>
+       <div class="page-sub">Welcome back, <span id="greet-name">–</span></div>
+      </div>
+      <span id="liveClock" class="clock"></span>
      </div>
-     <div
-      id="liveClock"
-      style="font-weight: 600; font-size: 1.1rem; color: var(--accent-color)"
-     ></div>
+
+     <div class="top-actions">
+      <button
+       class="theme-toggle"
+       id="theme-toggle-btn"
+       onclick="toggleTheme()"
+      >
+       🌙
+      </button>
+      <div class="avatar" id="topbar-avatar">–</div>
+     </div>
     </header>
 
-    <!-- P3.2 - Four Business Stats cards [source: 1] -->
-    <section class="stats-grid">
-     <div class="stat-card">
-      <h3>Total Contacts</h3>
-      <div class="value" id="statTotal">0</div>
-     </div>
-     <div class="stat-card">
-      <h3>Active Missions</h3>
-      <div class="value" id="statActive">0</div>
-     </div>
-     <div class="stat-card">
-      <h3>Bounty Won</h3>
-      <div class="value" id="statWon">0</div>
-     </div>
-     <div class="stat-card">
-      <h3>New This Week</h3>
-      <div class="value" id="statNewWeek">0</div>
-     </div>
-    </section>
-
-    <!-- P3.3 & P3.4 - Complex Pipeline overview and lists [source: 1] -->
-    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem">
-     <div class="stat-card">
-      <h3>Pipeline Stages</h3>
-      <div
-       id="pipelineSummary"
-       style="
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-       "
-      ></div>
-     </div>
-     <div class="stat-card">
-      <div
-       style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-       "
-      >
-       <h3>Recent Reconnaissance Arrivals</h3>
-       <a
-        href="clients.html"
-        style="
-         color: var(--accent-color);
-         text-decoration: none;
-         font-weight: 600;
-        "
-        >View Full Scroll →</a
-       >
+    <div class="content">
+     <div class="stats">
+      <div class="stat a">
+       <div class="ic">$</div>
+       <div class="num" id="stat-revenue">$482K</div>
+       <div class="lbl">Revenue this quarter</div>
       </div>
-      <table
-       style="width: 100%; border-collapse: collapse; text-align: left"
-       id="recentClientsTable"
-      ></table>
+      <div class="stat b">
+       <div class="ic">✓</div>
+       <div class="num" id="stat-deals">37</div>
+       <div class="lbl">Deals won</div>
+      </div>
+      <div class="stat c">
+       <div class="ic">%</div>
+       <div class="num" id="stat-active">–</div>
+       <div class="lbl">Active clients</div>
+      </div>
+      <div class="stat d">
+       <div class="ic">◎</div>
+       <div class="num" id="stat-clients">–</div>
+       <div class="lbl">Total clients</div>
+      </div>
+     </div>
+
+     <div class="board-wrap">
+      <!-- ID დაემატა და ჰარდკოდი წაიშალა ციმციმის თავიდან ასაცილებლად -->
+      <div class="card" id="recent-activity-card">
+       <div class="sec-title">Recent activity</div>
+       <div class="loading-state">Loading activities...</div>
+      </div>
+
+      <div class="card">
+       <div class="sec-title">Top reps</div>
+       <div class="rep">
+        <span class="av">NU</span><span class="nm">Naruto Uzumaki</span
+        ><span class="val">$118K</span>
+       </div>
+       <div class="rep">
+        <span class="av">SU</span><span class="nm">Sasuke Uchiha</span
+        ><span class="val">$96K</span>
+       </div>
+       <div class="rep">
+        <span class="av">KH</span><span class="nm">Kakashi Hatake</span
+        ><span class="val">$81K</span>
+       </div>
+       <div class="rep">
+        <span class="av">IU</span><span class="nm">Itachi Uchiha</span
+        ><span class="val">$64K</span>
+       </div>
+      </div>
      </div>
     </div>
    </main>
   </div>
-  <script src="js/data.js"></script>
+
+  <script src="js/theme.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
  </body>
 </html>
