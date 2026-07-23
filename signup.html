@@ -3,69 +3,54 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Sign Up - Shinobi CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign up · 10x CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+   href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+   rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/guard.js"></script>
  </head>
- <body class="auth-container">
-  <div class="auth-card">
-   <h2>Join <span class="anime-brand-text">Shinobi CRM</span></h2>
-   <form id="signupForm" novalidate>
-    <div class="form-group">
-     <label>Full Name</label>
-     <input
-      type="text"
-      id="fullName"
-      class="form-control"
-      placeholder="Kakashi Hatake"
-     />
-     <span class="error-text" id="nameError"></span>
+ <body>
+  <script src="js/theme.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+
+  <div class="auth-wrap">
+   <div class="auth-card">
+    <div class="auth-brand">
+     <div class="brand-mark">10x</div>
+     <div class="brand-name">10x<span>CRM</span></div>
     </div>
-    <div class="form-group">
-     <label>Email</label>
+    <div class="auth-title">Create your account</div>
+    <div class="auth-sub">Start tracking clients in a couple of minutes.</div>
+
+    <form onsubmit="handleSignup(event)">
+     <label class="f">Full name</label>
+     <input id="su-name" placeholder="e.g. Rika Kondo" autocomplete="name" />
+     <label class="f">Email</label>
      <input
+      id="su-email"
       type="email"
-      id="email"
-      class="form-control"
-      placeholder="kakashi@leaf.com"
+      placeholder="you@company.com"
+      autocomplete="email"
      />
-     <span class="error-text" id="emailError"></span>
-    </div>
-    <div class="form-group">
-     <label>Company (Optional)</label>
+     <label class="f">Password</label>
      <input
-      type="text"
-      id="company"
-      class="form-control"
-      placeholder="Company (optional)"
-     />
-    </div>
-    <div class="form-group">
-     <label>Password</label>
-     <input
+      id="su-password"
       type="password"
-      id="password"
-      class="form-control"
-      placeholder="••••••••"
+      placeholder="At least 6 characters"
+      autocomplete="new-password"
      />
-     <span class="error-text" id="passwordError"></span>
+     <div class="field-error" id="su-error"></div>
+     <button class="btn" type="submit">Create account</button>
+    </form>
+
+    <div class="auth-foot">
+     Already have an account? <a href="login.html">Sign in</a>
     </div>
-    <div class="form-group">
-     <label>Confirm Password</label>
-     <input
-      type="password"
-      id="confirmPassword"
-      class="form-control"
-      placeholder="••••••••"
-     />
-     <span class="error-text" id="confirmPasswordError"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Create Account</button>
-   </form>
-   <div class="auth-footer">
-    Already have an account? <a href="index.html">Log in</a>
    </div>
   </div>
-  <script src="js/auth.js"></script>
  </body>
 </html>
