@@ -21,26 +21,22 @@ A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — 
 ## Project Structure
 
 10x-crm/
-├── index.html redirects to dashboard or login based on session
-├── signup.html
-├── login.html
-├── dashboard.html
-├── clients.html
-├── profile.html
+├── index.html # redirects to dashboard or login based on session
+├── signup.html # user registration page
+├── login.html # user login page
+├── dashboard.html # main metrics and activity board
+├── clients.html # client management, search, and sorting
+├── profile.html # user profile and settings
 ├── css/
-│ └── style.css global design tokens, dynamic theme variables & component styles
-├── js/
-│ ├── ui.js toast notifications, modals & UI helpers
-│ ├── theme.js dark/light theme toggle controller
-│ ├── auth.js user registration, authentication guard, session management
-│ ├── api.js mock API layer, error handling & localStorage fallback sync
-│ ├── clients.js CRUD actions and client modal logic
-│ ├── dashboard.js live clock, metrics calculation, recent activity feed
-│ └── profile.js profile management, password changes, data reset
-├── README.md
-├── ai-log.md AI development log & session entries (5 entries)
-├── glossary.md project technical terms and terminology definitions
-└── research-note.md architecture overview, technical decisions & implementation details
+│ └── style.css # global design tokens, dynamic theme variables & component styles
+└── js/
+├── ui.js # toast notifications, modals & UI helpers
+├── theme.js # dark/light theme toggle controller
+├── auth.js # user registration, authentication guard, session management
+├── api.js # mock API layer, error handling & localStorage fallback sync
+├── clients.js # CRUD actions, search, filtering, and client modal logic
+├── dashboard.js # live clock, metrics calculation, recent activity feed
+└── profile.js # profile management, password changes, data reset
 
 ## Storage Keys
 
