@@ -415,7 +415,11 @@ button.btn.ghost:hover:not(:disabled) {
     color: var(--muted);
 }
 
-.p-meta-email {
+#p-meta-email {
+    color: #2b6cb0;
+}
+
+#p-meta-division {
     color: #2b6cb0;
 }
 
