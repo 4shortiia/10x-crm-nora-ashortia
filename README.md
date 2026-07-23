@@ -20,7 +20,7 @@ A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — 
 
 ## Project Structure
 
-10x-crm/
+10x-crm
 ├── index.html # redirects to dashboard or login based on session
 ├── signup.html # user registration page
 ├── login.html # user login page
