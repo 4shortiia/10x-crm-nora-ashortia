@@ -3,247 +3,116 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8" />
-  <title>Scroll Base - Shinobi CRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clients · 10x CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+   href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+   rel="stylesheet"
+  />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/guard.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+   requireAuth();
+  </script>
  </head>
  <body>
-  <div class="app-container">
+  <script src="js/theme.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/clients.js"></script>
+
+  <div class="app">
    <aside class="sidebar">
-    <h2 class="sidebar-logo">
-     <span class="anime-brand-text">🍥 Shinobi CRM</span>
-    </h2>
-    <ul class="nav-menu">
-     <li class="nav-item"><a href="dashboard.html">🏠 Dashboard</a></li>
-     <li class="nav-item active"><a href="clients.html">👥 Clients Base</a></li>
-     <li class="nav-item"><a href="profile.html">👤 Ninja Profile</a></li>
-    </ul>
-    <div class="sidebar-footer">
-     <button
-      id="themeToggleBtn"
-      class="btn btn-primary"
-      style="background: #4c6ef5"
+    <div class="brand">
+     <div class="brand-mark">10x</div>
+     <div class="brand-name">10x<span>CRM</span></div>
+    </div>
+    <nav class="nav">
+     <a class="nav-item" href="dashboard.html"
+      ><span class="ic">D</span>Dashboard</a
      >
-      ☯ Theme
-     </button>
-     <button id="logoutBtn" class="btn btn-danger">🚪 Log Out</button>
+     <a class="nav-item active" href="clients.html"
+      ><span class="ic">C</span>Clients</a
+     >
+     <a class="nav-item" href="profile.html"
+      ><span class="ic">P</span>Profile</a
+     >
+    </nav>
+    <div class="sidebar-foot">
+     <button class="logout-btn" onclick="handleLogout()">Log out</button>
     </div>
    </aside>
 
-   <main class="main-content">
-    <div
-     style="
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-     "
-    >
-     <h1>Ninja Operations Database</h1>
-     <button class="btn btn-primary" id="openAddModalBtn" style="width: auto">
-      ➕ Summon New Asset
-     </button>
-    </div>
-
-    <!-- P4.7 Toolbar (Search + Chips + Sorting) [source: 1] -->
-    <div class="toolbar">
-     <input
-      type="text"
-      id="searchInput"
-      class="form-control"
-      placeholder="Search by character name or division..."
-      style="max-width: 300px"
-     />
-     <div class="filter-chips">
-      <button class="chip active" data-filter="All">All Assets</button>
-      <button class="chip" data-filter="Lead">Genin (Lead)</button>
-      <button class="chip" data-filter="Contacted">Chunin (Contacted)</button>
-      <button class="chip" data-filter="Won">Jonin (Won)</button>
-      <button class="chip" data-filter="Lost">Missing-Nin (Lost)</button>
+   <main class="main">
+    <header class="topbar">
+     <div>
+      <div class="page-title">Clients</div>
+      <div class="page-sub">Manage the people you sell to</div>
      </div>
-     <select id="sortSelect" class="form-control" style="max-width: 180px">
-      <option value="Newest">Newest Arrived</option>
-      <option value="Alpha">Name (A-Z)</option>
-      <option value="Value">Bounty (High-Low)</option>
-     </select>
-    </div>
+     <div class="top-actions">
+      <button
+       class="theme-toggle"
+       id="theme-toggle-btn"
+       onclick="toggleTheme()"
+      >
+       🌙
+      </button>
+      <div class="avatar" id="topbar-avatar">–</div>
+     </div>
+    </header>
 
-    <div
-     id="loadingIndicator"
-     style="
-      font-weight: 600;
-      text-align: center;
-      padding: 2rem;
-      font-size: 1.2rem;
-      color: var(--text-muted);
-     "
-    >
-     Loading system scrolls...
+    <div class="content">
+     <div class="clients-wrap">
+      <div class="card">
+       <div class="sec-title">All clients</div>
+       <table>
+        <thead>
+         <tr>
+          <th>Name</th>
+          <th>Company</th>
+          <th>Value</th>
+          <th>Status</th>
+          <th></th>
+         </tr>
+        </thead>
+        <tbody id="client-rows"></tbody>
+       </table>
+      </div>
+      <div class="card">
+       <div class="sec-title">Add client</div>
+       <form onsubmit="addClient(event)">
+        <label class="f">Name</label>
+        <input id="in-name" placeholder="e.g. Aiko Sato" />
+        <label class="f">Company</label>
+        <input id="in-company" placeholder="e.g. Nexus Retail" />
+        <label class="f">Deal value</label>
+        <input id="in-value" placeholder="e.g. $12,400" />
+        <label class="f">Status</label>
+        <select id="in-status">
+         <option value="new">New</option>
+         <option value="active">Active</option>
+         <option value="paused">Paused</option>
+        </select>
+        <button class="btn" id="add-btn" type="submit">Add client</button>
+       </form>
+      </div>
+     </div>
     </div>
-    <div class="clients-list" id="clientsGrid"></div>
    </main>
   </div>
 
-  <!-- ADD CLIENT MODAL -->
-  <div class="modal" id="addClientModal">
-   <div class="modal-content">
-    <span class="close-modal" id="closeAddModal">✕</span>
-    <h3>Summon New Character Asset</h3>
-    <form id="addClientForm" style="margin-top: 1.5rem" novalidate>
-     <div class="form-group">
-      <label>Character Name</label>
-      <input
-       type="text"
-       id="addName"
-       class="form-control"
-       placeholder="Eren Yeager"
-      />
-      <span class="error-text" id="addNameError"></span>
-     </div>
-     <div class="form-group">
-      <label>Email Grid Connection</label>
-      <input
-       type="email"
-       id="addEmail"
-       class="form-control"
-       placeholder="eren@rumbling.com"
-      />
-      <span class="error-text" id="addEmailError"></span>
-     </div>
-     <div class="form-group">
-      <label>Den Den Mushi (Phone)</label>
-      <input
-       type="text"
-       id="addPhone"
-       class="form-control"
-       placeholder="+81 90-XXXX"
-      />
-      <span class="error-text" id="addPhoneError"></span>
-     </div>
-     <div class="form-group">
-      <label>Affiliation / Regiment</label>
-      <input
-       type="text"
-       id="addCompany"
-       class="form-control"
-       placeholder="Survey Corps"
-      />
-     </div>
-     <div class="form-group">
-      <label>Operational Bounty Value ($)</label>
-      <input
-       type="number"
-       id="addValue"
-       class="form-control"
-       placeholder="7500"
-      />
-      <span class="error-text" id="addValueError"></span>
-     </div>
-     <div class="form-group">
-      <label>Operational Standing Status</label>
-      <select id="addStatus" class="form-control">
-       <option value="Lead">Lead</option>
-       <option value="Contacted">Contacted</option>
-       <option value="Won">Won</option>
-       <option value="Lost">Lost</option>
-      </select>
-     </div>
-     <button type="submit" class="btn btn-primary">
-      Formulate Manifestation
-     </button>
-    </form>
-   </div>
-  </div>
-
-  <!-- DETAILS MODAL -->
-  <div class="modal" id="detailsModal">
-   <div class="modal-content" style="max-width: 550px">
-    <span class="close-modal" id="closeDetailsModal">✕</span>
-    <div
-     style="
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 1rem;
-     "
-    >
-     <img
-      id="detImage"
-      src=""
-      style="
-       width: 70px;
-       height: 70px;
-       border-radius: 50%;
-       border: 2px solid var(--accent-color);
-      "
-     />
-     <div>
-      <h2 id="detName">Character Details</h2>
-      <p id="detMeta" style="color: var(--text-muted); font-size: 0.9rem"></p>
-     </div>
-    </div>
-    <div
-     style="
-      margin-top: 1rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      font-size: 0.95rem;
-     "
-    >
-     <div>📧: <span id="detEmail"></span></div>
-     <div>📞: <span id="detPhone"></span></div>
-     <div>💰 Bounty: <strong id="detValue"></strong></div>
-     <div>📅 Inducted: <span id="detDate"></span></div>
-    </div>
-
-    <div
-     style="
-      margin-top: 1.5rem;
-      background: var(--bg-primary);
-      padding: 1rem;
-      border-radius: 8px;
-     "
-    >
-     <h4>Summoner's Tactical Field Notes</h4>
-     <div
-      id="notesContainer"
-      style="
-       max-height: 140px;
-       overflow-y: auto;
-       margin: 10px 0;
-       font-size: 0.9rem;
-       display: flex;
-       flex-direction: column;
-       gap: 5px;
-      "
-     ></div>
-     <div style="display: flex; gap: 8px; margin-top: 8px">
-      <input
-       type="text"
-       id="noteInput"
-       class="form-control"
-       placeholder="Write logs onto scroll..."
-      />
-      <button
-       class="btn btn-primary"
-       id="addNoteBtn"
-       style="width: auto; padding: 0 1rem"
-      >
-       Log
-      </button>
-     </div>
-    </div>
-    <div style="margin-top: 1rem">
-     <button class="btn btn-primary" id="remindBtn" style="background: #f59f00">
-      ⏳ Set Shadow Alarm (1 Min)
-     </button>
-    </div>
-   </div>
-  </div>
-
-  <script src="js/data.js"></script>
-  <script src="js/clients.js"></script>
+  <script>
+   var s = getSession();
+   if (s)
+    document.getElementById("topbar-avatar").textContent = s.name
+     .split(" ")
+     .map(function (p) {
+      return p[0];
+     })
+     .join("")
+     .slice(0, 2)
+     .toUpperCase();
+  </script>
  </body>
 </html>
