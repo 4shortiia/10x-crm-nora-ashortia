@@ -20,7 +20,7 @@ A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — 
 
 ## Project Structure
 
-10x-crm
+````10x-crm
 ├── index.html # redirects to dashboard or login based on session
 ├── signup.html # user registration page
 ├── login.html # user login page
@@ -36,7 +36,7 @@ A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — 
 ├── api.js # mock API layer, error handling & localStorage fallback sync
 ├── clients.js # CRUD actions, search, filtering, and client modal logic
 ├── dashboard.js # live clock, metrics calculation, recent activity feed
-└── profile.js # profile management, password changes, data reset
+└── profile.js # profile management, password changes, data reset```
 
 ## Storage Keys
 
@@ -53,4 +53,4 @@ No build tools or installation required. Open `index.html` directly in any web b
 
 ```bash
 npx serve .
-```
+````
