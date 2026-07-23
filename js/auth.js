@@ -20,6 +20,13 @@ function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+// პაროლის ვალიდაციის დამხმარე ფუნქცია (მინიმუმ 6 სიმბოლო, ციფრი და დიდი ასო)
+function isValidPassword(password) {
+    return (
+        password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password)
+    );
+}
+
 // ---- Sign up ----
 function handleSignup(event) {
     event.preventDefault();
@@ -48,9 +55,12 @@ function handleSignup(event) {
         }
         return;
     }
-    if (password.length < 6) {
+
+    // განახლებული პაროლის შემოწმება
+    if (!isValidPassword(password)) {
         if (errorEl) {
-            errorEl.textContent = "Password needs at least 6 characters.";
+            errorEl.textContent =
+                "Password needs at least 6 characters, including a number and an uppercase letter.";
             errorEl.classList.add("show");
         }
         return;
