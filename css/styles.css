@@ -905,12 +905,6 @@ tbody tr:hover .status {
     gap: 16px;
 }
 
-.profile-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
 .field {
     margin-bottom: 12px;
 }
@@ -993,7 +987,7 @@ tbody tr:hover .status {
 
 /* --- Client Details Modal Styles --- */
 .modal-overlay.hidden {
-    display: none !important;
+    display: none;
 }
 
 .modal-overlay {
@@ -1183,7 +1177,6 @@ tbody tr:hover .status {
         padding: 14px;
     }
 
-    /* კლიენტების ცხრილის ადაპტაცია 390px და ნაკლებ ეკრანებზე (ბარათების რეჟიმი) */
     .clients-table-card table,
     .clients-table-card thead,
     .clients-table-card tbody,
@@ -1192,7 +1185,7 @@ tbody tr:hover .status {
     .clients-table-card tr {
         display: block;
         width: 100%;
-        min-width: unset !important;
+        min-width: unset;
     }
 
     .clients-table-card thead tr {
@@ -1215,14 +1208,14 @@ tbody tr:hover .status {
     }
 
     .clients-table-card td {
-        border: none !important;
+        border: none;
         position: relative;
         padding: 6px 0;
         text-align: right;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        white-space: normal !important;
+        white-space: normal;
     }
 
     .clients-table-card td:nth-of-type(1):before {
@@ -1252,7 +1245,7 @@ tbody tr:hover .status {
 
 /* --- Summoner's Tactical Modal Styles --- */
 .modal-overlay.hidden {
-    display: none !important;
+    display: none;
 }
 
 .modal-overlay {
@@ -1457,25 +1450,42 @@ tbody tr:hover .status {
 
 /* Filter Pills Active Dynamic Colors */
 .client-filter-btn.active[data-status="all"] {
-    background: var(--coral) !important;
-    color: #fff !important;
-    border-color: var(--coral) !important;
+    background: var(--coral);
+    color: #fff;
+    border-color: var(--coral);
 }
 
 .client-filter-btn.active[data-status="new"] {
-    background: var(--sun-soft) !important;
-    color: #b8860b !important;
-    border-color: var(--sun-soft) !important;
+    background: var(--sun-soft);
+    color: #b8860b;
+    border-color: var(--sun-soft);
 }
 
 .client-filter-btn.active[data-status="active"] {
-    background: var(--teal-soft) !important;
-    color: var(--teal) !important;
-    border-color: var(--teal-soft) !important;
+    background: var(--teal-soft);
+    color: var(--teal);
+    border-color: var(--teal-soft);
 }
 
 .client-filter-btn.active[data-status="paused"] {
-    background: var(--coral-soft) !important;
-    color: var(--coral) !important;
-    border-color: var(--coral-soft) !important;
+    background: var(--coral-soft);
+    color: var(--coral);
+    border-color: var(--coral-soft);
+}
+
+#profileEditForm {
+    display: none;
+    margin-top: 12px;
+}
+
+#editProfileBtn {
+    width: 100px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.sec-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

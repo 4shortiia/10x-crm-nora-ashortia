@@ -79,22 +79,101 @@
 
      <div class="profile-layout">
       <div class="profile-col-main">
+       <!-- Details Card with Edit Option -->
        <div class="card">
-        <div class="sec-title">Details</div>
-        <div class="profile-grid">
-         <div class="field">
-          <label>Email</label>
-          <div class="val" id="p-email">–</div>
-         </div>
-         <div class="field">
-          <label>Company / Store</label>
-          <div class="val" id="p-company">–</div>
-         </div>
-         <div class="field">
-          <label>Signed in since</label>
-          <div class="val" id="p-joined">–</div>
+        <div class="sec-title">
+         <span>Details</span>
+         <button type="button" id="editProfileBtn" class="btn ghost">
+          Edit Profile
+         </button>
+        </div>
+
+        <!-- View Mode -->
+        <div id="profileViewMode">
+         <div class="profile-grid">
+          <div class="field">
+           <label>Email</label>
+           <div class="val" id="p-email">–</div>
+          </div>
+          <div class="field">
+           <label>Company / Store</label>
+           <div class="val" id="p-company">–</div>
+          </div>
+          <div class="field">
+           <label>Signed in since</label>
+           <div class="val" id="p-joined">–</div>
+          </div>
          </div>
         </div>
+
+        <!-- Edit Form Mode (Hidden by default) -->
+        <form id="profileEditForm">
+         <div style="display: flex; flex-direction: column; gap: 10px">
+          <div>
+           <label class="f">Name</label>
+           <input
+            type="text"
+            id="editNameInput"
+            class="f-input"
+            required
+            style="
+             width: 100%;
+             padding: 8px;
+             border-radius: 6px;
+             border: 1px solid var(--line);
+             background: var(--panel);
+             color: var(--ink);
+            "
+           />
+          </div>
+          <div>
+           <label class="f">Email</label>
+           <input
+            type="email"
+            id="editEmailInput"
+            class="f-input"
+            required
+            style="
+             width: 100%;
+             padding: 8px;
+             border-radius: 6px;
+             border: 1px solid var(--line);
+             background: var(--panel);
+             color: var(--ink);
+            "
+           />
+          </div>
+          <div>
+           <label class="f">Company / Store</label>
+           <input
+            type="text"
+            id="editCompanyInput"
+            class="f-input"
+            style="
+             width: 100%;
+             padding: 8px;
+             border-radius: 6px;
+             border: 1px solid var(--line);
+             background: var(--panel);
+             color: var(--ink);
+            "
+           />
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 4px">
+           <button type="submit" class="btn" style="padding: 6px 14px">
+            Save Changes
+           </button>
+           <button
+            type="button"
+            id="cancelEditBtn"
+            class="btn ghost"
+            style="padding: 6px 14px"
+           >
+            Cancel
+           </button>
+          </div>
+         </div>
+        </form>
        </div>
 
        <div class="card">
