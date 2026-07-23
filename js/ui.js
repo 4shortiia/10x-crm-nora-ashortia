@@ -18,3 +18,19 @@ function showToast(message, type) {
         setTimeout(() => el.remove(), 200);
     }, 2600);
 }
+
+//
+function setupTopbarAvatar() {
+    const topbarAvatar = document.getElementById("topbar-avatar");
+    if (!topbarAvatar) return;
+
+    topbarAvatar.onclick = () => {
+        window.location.href = "profile.html";
+    };
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupTopbarAvatar);
+} else {
+    setupTopbarAvatar();
+}
