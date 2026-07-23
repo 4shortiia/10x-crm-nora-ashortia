@@ -38,6 +38,8 @@ A lightweight, front-end-only CRM built with plain HTML, CSS and JavaScript — 
 ├── dashboard.js # live clock, metrics calculation, recent activity feed
 └── profile.js # profile management, password changes, data reset```
 
+````
+
 ## Storage Keys
 
 | Key           | Shape                                    | Purpose                      |
@@ -53,4 +55,5 @@ No build tools or installation required. Open `index.html` directly in any web b
 
 ```bash
 npx serve .
-````
+
+```
