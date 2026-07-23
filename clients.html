@@ -102,6 +102,50 @@
    </main>
   </div>
 
+  <!-- Client Details / Tactical Field Notes Modal -->
+  <div id="client-modal" class="modal-overlay hidden">
+   <div class="modal-card card">
+    <button type="button" id="close-modal" class="modal-close-btn">
+     &times;
+    </button>
+
+    <div class="modal-head-row">
+     <div class="modal-avatar" id="m-avatar">N</div>
+     <div>
+      <h3 id="m-name">Client Name</h3>
+      <p id="m-company">Company</p>
+     </div>
+    </div>
+
+    <hr class="modal-divider" />
+
+    <div class="modal-meta-grid">
+     <div class="meta-badge">📧 <span id="m-email">—</span></div>
+     <div class="meta-badge">📞 <span id="m-phone">—</span></div>
+     <div class="meta-badge">💰 <span id="m-value">—</span></div>
+     <div class="meta-badge">📅 <span id="m-inducted">—</span></div>
+    </div>
+
+    <div class="modal-body">
+     <div class="sec-title modal-notes-title">Notes & History</div>
+     <div id="m-notes-list" class="notes-list"></div>
+
+     <div class="modal-note-form">
+      <input
+       type="text"
+       id="m-new-note"
+       placeholder="Write logs onto scroll..."
+      />
+      <button id="m-add-note" class="btn modal-log-btn">Log</button>
+     </div>
+
+     <button id="m-remind" class="btn modal-alarm-btn">
+      ⏳ Set Shadow Alarm (1 Min)
+     </button>
+    </div>
+   </div>
+  </div>
+
   <script>
    var s = getSession();
    if (s)

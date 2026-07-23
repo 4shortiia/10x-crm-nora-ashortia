@@ -26,10 +26,26 @@ function initProfile() {
     const pCompanyEl = document.getElementById("p-company"); // <--- კომპანიის ელემენტი
     const pJoinedEl = document.getElementById("p-joined");
 
+    // New informative header elements
+    const pMetaEmailEl = document.getElementById("p-meta-email");
+    const pMetaDivisionEl = document.getElementById("p-meta-division");
+    const pMetaDateEl = document.getElementById("p-meta-date");
+
     if (avatarEl) avatarEl.textContent = initials;
     if (pAvatarEl) pAvatarEl.textContent = initials;
     if (pNameEl) pNameEl.textContent = session.name || "User";
     if (pEmailEl) pEmailEl.textContent = session.email || "—";
+
+    // Fill new header meta fields
+    if (pMetaEmailEl)
+        pMetaEmailEl.textContent = session.email || "demo@test.com";
+    if (pMetaDivisionEl)
+        pMetaDivisionEl.textContent = session.division || "10x";
+
+    const formattedDate = session.loggedInAt
+        ? new Date(session.loggedInAt).toLocaleDateString("en-US")
+        : "7/20/2026";
+    if (pMetaDateEl) pMetaDateEl.textContent = formattedDate;
 
     // კომპანიის დასახელების გამოჩენა (სესიიდან ან crm_users-იდან)
     if (pCompanyEl) {
