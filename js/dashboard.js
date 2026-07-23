@@ -1,83 +1,120 @@
-// js/dashboard.js
-document.addEventListener("DOMContentLoaded", async () => {
-    // P3.1 - Greeting Logic & Live Clock initialization [source: 1]
-    const session = JSON.parse(localStorage.getItem("crm_session")); // [source: 1]
-    const users = JSON.parse(localStorage.getItem("crm_users") || "[]"); // [source: 1]
-    const currentUser = users.find((u) => u.id === session?.userId);
+// dashboard.js — derives dashboard numbers & recent activities from crm_clients data
 
-    if (currentUser) {
-        const firstName = currentUser.fullName.split(" ")[0]; // Extracting first word [source: 1]
-        document.getElementById("welcomeGreeting").textContent =
-            `Welcome back, ${firstName}!`; // [source: 1]
-    }
+function initClock() {
+    const updateClock = () => {
+        const liveClockEl = document.getElementById("liveClock");
+        if (liveClockEl) {
+            const now = new Date();
+            liveClockEl.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+        }
+    };
+    updateClock(); // დაუყოვნებლივ გამოჩნდეს
+    setInterval(updateClock, 1000); // ყოველ 1 წამში განახლება
+}
 
-    // Dynamic Clock Engine [source: 1]
-    setInterval(() => {
-        const now = new Date();
-        document.getElementById("liveClock").textContent =
-            `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`; // [source: 1]
-    }, 1000);
+async function initDashboard() {
+    // 1. საათის გაშვება
+    initClock();
 
-    // Load data through state core [source: 1]
+    // 2. მომხმარებლის პროფილის განახლება Topbar-ში
     try {
-        const clients = await DataEngine.loadClients(); // [source: 1]
-        renderDashboardMetrics(clients);
+        if (typeof getSession === "function") {
+            const session = getSession();
+            if (session && session.name) {
+                const avatarEl = document.getElementById("topbar-avatar");
+                const greetNameEl = document.getElementById("greet-name");
+
+                if (avatarEl) {
+                    avatarEl.textContent = session.name
+                        .split(" ")
+                        .map((p) => p[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase();
+                }
+                if (greetNameEl) {
+                    greetNameEl.textContent = session.name.split(" ")[0];
+                }
+            }
+        }
     } catch (e) {
-        showToast("Error displaying metrics", "error"); // [source: 1]
+        console.error("Session error:", e);
     }
 
-    function renderDashboardMetrics(clients) {
-        // Card Calculations [source: 1]
-        document.getElementById("statTotal").textContent = clients.length; // [source: 1]
+    // 3. კლიენტების წამოღება და სტატისტიკის განახლება
+    try {
+        let clients = [];
 
-        const activeDeals = clients.filter(
-            (c) => c.status !== "Won" && c.status !== "Lost",
-        ).length; // [source: 1]
-        document.getElementById("statActive").textContent = activeDeals;
+        if (typeof apiGetClients === "function") {
+            clients = await apiGetClients();
+        } else {
+            clients = JSON.parse(localStorage.getItem("crm_clients")) || [];
+        }
 
-        const totalWon = clients
-            .filter((c) => c.status === "Won")
-            .reduce((acc, c) => acc + c.dealValue, 0); // [source: 1]
-        document.getElementById("statWon").textContent =
-            `$${totalWon.toLocaleString()}`; // [source: 1]
+        if (!Array.isArray(clients)) clients = [];
 
-        const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000; // [source: 1]
-        const newThisWeek = clients.filter(
-            (c) => new Date(c.createdAt).getTime() >= sevenDaysAgo,
-        ).length; // [source: 1]
-        document.getElementById("statNewWeek").textContent = newThisWeek;
+        // ა) Total Clients & Active Clients
+        const statClientsEl = document.getElementById("stat-clients");
+        const statActiveEl = document.getElementById("stat-active");
 
-        // Pipeline Distribution breakdown [source: 1]
-        const stages = ["Lead", "Contacted", "Won", "Lost"]; // [source: 1]
-        const pipelineContainer = document.getElementById("pipelineSummary");
-        pipelineContainer.innerHTML = "";
-        stages.forEach((stage) => {
-            const count = clients.filter((c) => c.status === stage).length; // [source: 1]
-            pipelineContainer.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="badge ${stage.toLowerCase()}">${stage}</span>
-                    <strong style="font-size:1.1rem">${count}</strong>
-                </div>`;
-        });
+        if (statClientsEl) statClientsEl.textContent = clients.length;
 
-        // Recent 5 entries rendered safely [source: 1]
-        const recent = [...clients]
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0, 5); // [source: 1]
-        const table = document.getElementById("recentClientsTable");
-        table.innerHTML = `
-            <tr style="border-bottom:2px solid var(--border-color); color:var(--text-muted); font-size:0.9rem;">
-                <th style="padding:10px 5px;">Squad Member</th>
-                <th>Affiliation</th>
-                <th>Status</th>
-            </tr>`;
-        recent.forEach((c) => {
-            table.innerHTML += `
-                <tr style="border-bottom:1px solid var(--border-color); font-size:0.95rem;">
-                    <td style="padding:12px 5px; font-weight:500;">${c.name}</td>
-                    <td>${c.company}</td>
-                    <td><span class="badge ${c.status.toLowerCase()}">${c.status}</span></td>
-                </tr>`;
-        });
+        const activeClients = clients.filter(
+            (c) => c.status && c.status.toLowerCase() === "active",
+        );
+        if (statActiveEl) statActiveEl.textContent = activeClients.length;
+
+        // ბ) Revenue-ს განახლება (თუ კლიენტებს აქვთ value ველი)
+        const statRevenueEl = document.getElementById("stat-revenue");
+        if (statRevenueEl) {
+            const totalRevenue = clients.reduce((sum, c) => {
+                const val = parseFloat(
+                    c.value?.toString().replace(/[^0-9.]/g, "") || 0,
+                );
+                return sum + val;
+            }, 0);
+
+            if (totalRevenue > 0) {
+                statRevenueEl.textContent = `$${totalRevenue.toLocaleString()}`;
+            }
+        }
+
+        // გ) Recent Activity-ს დინამიკური რენდერი
+        renderRecentActivity(clients);
+    } catch (error) {
+        console.error("Error loading dashboard metrics:", error);
     }
-});
+}
+
+// Recent Activity სექციის დარენდერება
+function renderRecentActivity(clients) {
+    const activityCard = document.getElementById("recent-activity-card");
+    if (!activityCard) return;
+
+    if (clients.length === 0) {
+        activityCard.innerHTML = `
+            <div class="sec-title">Recent activity</div>
+            <div class="empty-state">No recent activity yet</div>
+        `;
+        return;
+    }
+
+    // იღებს ბოლო 4 დამატებულ კლიენტს
+    const recentClients = [...clients].reverse().slice(0, 4);
+
+    let html = `<div class="sec-title">Recent activity</div>`;
+
+    recentClients.forEach((client) => {
+        html += `
+            <div class="row">
+                <span class="dot"></span>
+                <span class="txt"><b>${client.name || "Client"}</b> added — ${client.company || "New Lead"}</span>
+                <span class="time">Recently</span>
+            </div>
+        `;
+    });
+
+    activityCard.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", initDashboard);
