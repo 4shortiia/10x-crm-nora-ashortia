@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const clientName =
             document.getElementById("m-name")?.textContent || "Client";
         setTimeout(() => {
-            showToast(`⏰ REMINDER: Follow up with ${clientName}!`, "success");
+            showToast(`REMINDER: Follow up with ${clientName}!`, "success");
         }, 60000);
     });
 });
