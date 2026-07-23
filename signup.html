@@ -29,6 +29,7 @@
     <form onsubmit="handleSignup(event)">
      <label class="f">Full name</label>
      <input id="su-name" placeholder="e.g. Rika Kondo" autocomplete="name" />
+
      <label class="f">Email</label>
      <input
       id="su-email"
@@ -36,6 +37,15 @@
       placeholder="you@company.com"
       autocomplete="email"
      />
+
+     <label class="f">Company / Store</label>
+     <input
+      id="su-company"
+      type="text"
+      placeholder="e.g. Anbu Division"
+      autocomplete="organization"
+     />
+
      <label class="f">Password</label>
      <input
       id="su-password"
@@ -43,6 +53,7 @@
       placeholder="At least 6 characters"
       autocomplete="new-password"
      />
+
      <div class="field-error" id="su-error"></div>
      <button class="btn" type="submit">Create account</button>
     </form>

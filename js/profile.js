@@ -6,7 +6,7 @@ function initProfile() {
 
     // Retrieving users and the current user from localStorage
     let users = JSON.parse(localStorage.getItem("crm_users") || "[]");
-    const currentUser = users.find((u) => u.id === session.userId) || {
+    const currentUser = users.find((u) => u.email === session.email) || {
         ...session,
         password: session.password || "",
     };
@@ -23,12 +23,20 @@ function initProfile() {
     const pAvatarEl = document.getElementById("p-avatar");
     const pNameEl = document.getElementById("p-name");
     const pEmailEl = document.getElementById("p-email");
+    const pCompanyEl = document.getElementById("p-company"); // <--- კომპანიის ელემენტი
     const pJoinedEl = document.getElementById("p-joined");
 
     if (avatarEl) avatarEl.textContent = initials;
     if (pAvatarEl) pAvatarEl.textContent = initials;
     if (pNameEl) pNameEl.textContent = session.name || "User";
     if (pEmailEl) pEmailEl.textContent = session.email || "—";
+
+    // კომპანიის დასახელების გამოჩენა (სესიიდან ან crm_users-იდან)
+    if (pCompanyEl) {
+        pCompanyEl.textContent =
+            session.company || currentUser.company || "Not specified";
+    }
+
     if (pJoinedEl) {
         pJoinedEl.textContent = session.loggedInAt
             ? new Date(session.loggedInAt).toLocaleDateString()
@@ -92,11 +100,11 @@ function initProfile() {
             // Password update
             currentUser.password = newPass;
             users = users.map((u) =>
-                u.id === currentUser.id ? currentUser : u,
+                u.email === currentUser.email ? currentUser : u,
             );
             localStorage.setItem("crm_users", JSON.stringify(users));
 
-            // Refresh session data (if you also save the password in the session)
+            // Refresh session data
             session.password = newPass;
             localStorage.setItem("crm_session", JSON.stringify(session));
 

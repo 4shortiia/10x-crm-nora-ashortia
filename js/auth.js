@@ -1,6 +1,6 @@
 // auth.js — everything related to accounts and sessions.
 // Two localStorage keys are used:
-//   crm_users   -> array of {name, email, password} created at signup
+//   crm_users   -> array of {name, email, company, password} created at signup
 //   crm_session -> the currently logged-in user, or absent if logged out
 
 function getUsers() {
@@ -28,31 +28,51 @@ function handleSignup(event) {
         .getElementById("su-email")
         .value.trim()
         .toLowerCase();
+    const company = document.getElementById("su-company")?.value.trim() || "";
     const password = document.getElementById("su-password").value;
     const errorEl = document.getElementById("su-error");
-    errorEl.classList.remove("show");
+
+    if (errorEl) errorEl.classList.remove("show");
 
     if (!name || !isValidEmail(email)) {
-        errorEl.textContent = "Enter your name and a valid email address.";
-        errorEl.classList.add("show");
+        if (errorEl) {
+            errorEl.textContent = "Enter your name and a valid email address.";
+            errorEl.classList.add("show");
+        }
+        return;
+    }
+    if (!company) {
+        if (errorEl) {
+            errorEl.textContent = "Please enter your company or store name.";
+            errorEl.classList.add("show");
+        }
         return;
     }
     if (password.length < 6) {
-        errorEl.textContent = "Password needs at least 6 characters.";
-        errorEl.classList.add("show");
+        if (errorEl) {
+            errorEl.textContent = "Password needs at least 6 characters.";
+            errorEl.classList.add("show");
+        }
         return;
     }
 
     const users = getUsers();
     if (users.some((u) => u.email === email)) {
-        errorEl.textContent = "An account with this email already exists.";
-        errorEl.classList.add("show");
+        if (errorEl) {
+            errorEl.textContent = "An account with this email already exists.";
+            errorEl.classList.add("show");
+        }
         return;
     }
 
-    users.push({ name, email, password });
+    // Saving a new user with the company
+    users.push({ name, email, company, password });
     saveUsers(users);
-    showToast("Account created — please sign in", "success");
+
+    if (typeof showToast === "function") {
+        showToast("Account created — please sign in", "success");
+    }
+
     setTimeout(() => {
         window.location.href = "login.html";
     }, 900);
@@ -67,7 +87,8 @@ function handleLogin(event) {
         .toLowerCase();
     const password = document.getElementById("li-password").value;
     const errorEl = document.getElementById("li-error");
-    errorEl.classList.remove("show");
+
+    if (errorEl) errorEl.classList.remove("show");
 
     const users = getUsers();
     const match = users.find(
@@ -75,17 +96,23 @@ function handleLogin(event) {
     );
 
     if (!match) {
-        errorEl.textContent = "Invalid email or password";
-        errorEl.classList.add("show");
-        showToast("Invalid email or password", "error");
+        if (errorEl) {
+            errorEl.textContent = "Invalid email or password";
+            errorEl.classList.add("show");
+        }
+        if (typeof showToast === "function") {
+            showToast("Invalid email or password", "error");
+        }
         return;
     }
 
+    // Name, email, and company are transferred to the session.
     localStorage.setItem(
         "crm_session",
         JSON.stringify({
             name: match.name,
             email: match.email,
+            company: match.company || "",
             loggedInAt: new Date().toISOString(),
         }),
     );
