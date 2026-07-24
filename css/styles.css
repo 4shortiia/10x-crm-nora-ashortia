@@ -1331,7 +1331,7 @@ tbody tr:hover .status {
 }
 
 .meta-badge {
-    background: rgb(63, 9, 31);
+    background: var(--coral-soft);
     color: var(--coral);
     padding: 10px 14px;
     border-radius: 30px;
@@ -1351,6 +1351,11 @@ tbody tr:hover .status {
 .meta-badge span {
     color: var(--ink);
     font-weight: 600;
+}
+
+[data-theme="dark"] .meta-badge {
+    background-color: #2f0816;
+    color: #f0f0f0;
 }
 
 .modal-notes-title {
