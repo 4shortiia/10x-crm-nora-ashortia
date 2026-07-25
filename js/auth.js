@@ -36,17 +36,27 @@ function handleSignup(event) {
     const emailInput = document.getElementById("su-email");
     const companyInput = document.getElementById("su-company");
     const passwordInput = document.getElementById("su-password");
+    const confirmPasswordInput = document.getElementById("su-confirm-password");
     const errorEl = document.getElementById("su-error");
 
     const name = nameInput ? nameInput.value.trim() : "";
     const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
     const company = companyInput ? companyInput.value.trim() : "";
     const password = passwordInput ? passwordInput.value : "";
+    const confirmPassword = confirmPasswordInput
+        ? confirmPasswordInput.value
+        : "";
 
     if (errorEl) errorEl.classList.remove("show");
 
     // Reset all input borders and error states
-    [nameInput, emailInput, companyInput, passwordInput].forEach((el) => {
+    [
+        nameInput,
+        emailInput,
+        companyInput,
+        passwordInput,
+        confirmPasswordInput,
+    ].forEach((el) => {
         if (el) {
             el.classList.remove("error");
             el.style.borderColor = "";
@@ -99,6 +109,15 @@ function handleSignup(event) {
         errorMessages.push(
             "Password needs at least 6 characters, including a number and an uppercase letter.",
         );
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+        if (confirmPasswordInput) {
+            confirmPasswordInput.classList.add("error");
+            confirmPasswordInput.style.borderColor = "#ff4d4f";
+        }
+        errorMessages.push("Passwords do not match.");
     }
 
     // If there are any validation errors, display them and stop
