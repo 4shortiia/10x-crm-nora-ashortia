@@ -20,7 +20,7 @@ function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// პაროლის ვალიდაციის დამხმარე ფუნქცია (მინიმუმ 6 სიმბოლო, ციფრი და დიდი ასო)
+// Password validation helper (minimum 6 characters, number and uppercase letter)
 function isValidPassword(password) {
     return (
         password.length >= 6 && /[A-Z]/.test(password) && /\d/.test(password)
@@ -30,46 +30,81 @@ function isValidPassword(password) {
 // ---- Sign up ----
 function handleSignup(event) {
     event.preventDefault();
-    const name = document.getElementById("su-name").value.trim();
-    const email = document
-        .getElementById("su-email")
-        .value.trim()
-        .toLowerCase();
-    const company = document.getElementById("su-company")?.value.trim() || "";
-    const password = document.getElementById("su-password").value;
+
+    // Get elements inside the function to ensure they exist in DOM
+    const nameInput = document.getElementById("su-name");
+    const emailInput = document.getElementById("su-email");
+    const companyInput = document.getElementById("su-company");
+    const passwordInput = document.getElementById("su-password");
     const errorEl = document.getElementById("su-error");
+
+    const name = nameInput ? nameInput.value.trim() : "";
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+    const company = companyInput ? companyInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
 
     if (errorEl) errorEl.classList.remove("show");
 
-    if (!name || !isValidEmail(email)) {
-        if (errorEl) {
-            errorEl.textContent = "Enter your name and a valid email address.";
-            errorEl.classList.add("show");
+    // Reset all input borders and error states
+    [nameInput, emailInput, companyInput, passwordInput].forEach((el) => {
+        if (el) {
+            el.classList.remove("error");
+            el.style.borderColor = "";
         }
-        return;
-    }
-    if (!company) {
-        if (errorEl) {
-            errorEl.textContent = "Please enter your company or store name.";
-            errorEl.classList.add("show");
+    });
+
+    let errorMessages = [];
+
+    // Check name length (minimum 3 characters)
+    if (name.length < 3) {
+        if (nameInput) {
+            nameInput.classList.add("error");
+            nameInput.style.borderColor = "#ff4d4f";
         }
-        return;
+        errorMessages.push("Name must be at least 3 characters long.");
     }
 
-    // განახლებული პაროლის შემოწმება
-    if (!isValidPassword(password)) {
-        if (errorEl) {
-            errorEl.textContent =
-                "Password needs at least 6 characters, including a number and an uppercase letter.";
-            errorEl.classList.add("show");
-        }
-        return;
-    }
-
+    // Check valid email format OR if it already exists in users list
     const users = getUsers();
-    if (users.some((u) => u.email === email)) {
+    const emailExists = users.some((u) => u.email === email);
+
+    if (!isValidEmail(email)) {
+        if (emailInput) {
+            emailInput.classList.add("error");
+            emailInput.style.borderColor = "#ff4d4f";
+        }
+        errorMessages.push("Please enter a valid email address.");
+    } else if (emailExists) {
+        if (emailInput) {
+            emailInput.classList.add("error");
+            emailInput.style.borderColor = "#ff4d4f";
+        }
+        errorMessages.push("An account with this email already exists.");
+    }
+
+    if (!company) {
+        if (companyInput) {
+            companyInput.classList.add("error");
+            companyInput.style.borderColor = "#ff4d4f";
+        }
+        errorMessages.push("Please enter your company or store name.");
+    }
+
+    // Check password requirements (minimum 6 characters, uppercase letter and number)
+    if (!isValidPassword(password)) {
+        if (passwordInput) {
+            passwordInput.classList.add("error");
+            passwordInput.style.borderColor = "#ff4d4f";
+        }
+        errorMessages.push(
+            "Password needs at least 6 characters, including a number and an uppercase letter.",
+        );
+    }
+
+    // If there are any validation errors, display them and stop
+    if (errorMessages.length > 0) {
         if (errorEl) {
-            errorEl.textContent = "An account with this email already exists.";
+            errorEl.innerHTML = errorMessages.join("<br>");
             errorEl.classList.add("show");
         }
         return;
