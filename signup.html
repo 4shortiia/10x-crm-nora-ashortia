@@ -13,12 +13,15 @@
   <link rel="stylesheet" href="css/styles.css" />
  </head>
  <body>
-  <script src="js/theme.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/auth.js"></script>
-
   <div class="auth-wrap">
    <div class="auth-card">
+    <button
+     class="theme-toggle theme-toggle-auth"
+     id="theme-toggle-btn"
+     onclick="toggleTheme()"
+    >
+     🌙
+    </button>
     <div class="auth-brand">
      <div class="brand-mark">10x</div>
      <div class="brand-name">10x<span>CRM</span></div>
@@ -71,5 +74,9 @@
     </div>
    </div>
   </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
  </body>
 </html>
