@@ -1,3 +1,4 @@
+<!-- Clients.html -->
 <!doctype html>
 <html lang="en">
  <head>
@@ -167,13 +168,31 @@
      <div class="sec-title modal-notes-title">Notes & History</div>
      <div id="m-notes-list" class="notes-list"></div>
 
-     <div class="modal-note-form">
+     <div
+      class="modal-note-form"
+      style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px"
+     >
       <input
        type="text"
        id="m-new-note"
        placeholder="Write logs onto scroll..."
+       style="
+        flex: 1;
+        width: auto;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: inherit;
+       "
       />
-      <button id="m-add-note" class="btn modal-log-btn">Log</button>
+      <button
+       id="m-add-note"
+       class="btn modal-log-btn"
+       style="white-space: nowrap"
+      >
+       Log
+      </button>
      </div>
 
      <button id="m-remind" class="btn modal-alarm-btn">

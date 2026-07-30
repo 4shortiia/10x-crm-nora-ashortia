@@ -222,7 +222,6 @@ input::placeholder {
 }
 
 button.btn {
-    width: 100%;
     padding: 11px;
     border: none;
     border-radius: 10px;

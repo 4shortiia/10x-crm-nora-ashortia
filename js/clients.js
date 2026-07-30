@@ -191,14 +191,25 @@ function renderNotes(notes) {
 
     list.innerHTML = notes
         .map(
-            (n) => `
-        <div class="note-item" style="background:var(--panel); padding:8px 12px; border-radius:8px; margin-bottom:8px; border:1px solid var(--line);">
-            <span class="note-date" style="display:block; font-size:11px; color:var(--muted);">${n.date}</span>
-            <span style="font-size:13px;">${n.text}</span>
+            (n, index) => `
+        <div class="note-item" style="background:var(--panel); padding:8px 12px; border-radius:8px; margin-bottom:8px; border:1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size:13px;"><b style="color:var(--muted); font-size:11px; display:block;">${n.date}</b>${n.text}</span>
+            <button onclick="deleteClientNote(${currentModalClientId}, ${index})" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0 4px;" title="Delete note">&times;</button>
         </div>
     `,
         )
         .join("");
+}
+
+function deleteClientNote(clientId, noteIndex) {
+    const clients = JSON.parse(localStorage.getItem("crm_clients")) || [];
+    const client = clients.find((c) => c.id == clientId);
+    if (client && client.notes) {
+        client.notes.splice(noteIndex, 1);
+        localStorage.setItem("crm_clients", JSON.stringify(clients));
+        renderNotes(client.notes);
+        showToast("Note deleted", "success");
+    }
 }
 
 // Event Listeners
