@@ -1,4 +1,3 @@
-<!-- clients.html -->
 <!doctype html>
 <html lang="en">
  <head>
@@ -67,134 +66,36 @@
       <div class="clients-table-card card">
        <div class="sec-title">All clients</div>
 
-       <!-- სერჩი, ფილტრები და სორტირება ზუსტი ვიზუალით -->
-       <div
-        class="crm-toolbar"
-        style="
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         flex-wrap: wrap;
-         gap: 12px;
-         margin-bottom: 16px;
-        "
-       >
+       <div class="crm-toolbar">
         <div class="search-box">
          <input
           type="text"
           id="client-search-input"
           placeholder="Search by character name or division..."
-          style="
-           padding: 10px 14px;
-           border-radius: 10px;
-           border: 1px solid var(--line);
-           background: var(--cream);
-           font-family: &quot;Nunito&quot;;
-           font-size: 13px;
-           font-weight: 600;
-           color: var(--ink);
-           width: 280px;
-           outline: none;
-          "
          />
         </div>
-        <div
-         class="filter-pills"
-         id="filter-pills"
-         style="display: flex; gap: 8px; flex-wrap: wrap"
-        >
-         <button
-          class="pill-btn client-filter-btn active"
-          data-status="all"
-          style="
-           padding: 8px 16px;
-           border-radius: 20px;
-           border: 1px solid var(--line);
-           background: var(--coral);
-           color: #fff;
-           font-family: &quot;Nunito&quot;;
-           font-size: 13px;
-           font-weight: 700;
-           cursor: pointer;
-           transition: all 0.2s ease;
-          "
-         >
+        <div class="filter-pills" id="filter-pills">
+         <button class="pill-btn client-filter-btn active" data-status="all">
           All Assets
          </button>
-         <button
-          class="pill-btn client-filter-btn"
-          data-status="new"
-          style="
-           padding: 8px 16px;
-           border-radius: 20px;
-           border: 1px solid var(--line);
-           background: var(--panel);
-           color: var(--muted);
-           font-family: &quot;Nunito&quot;;
-           font-size: 13px;
-           font-weight: 700;
-           cursor: pointer;
-           transition: all 0.2s ease;
-          "
-         >
-          New
+         <button class="pill-btn client-filter-btn" data-status="lead">
+          Lead
          </button>
-         <button
-          class="pill-btn client-filter-btn"
-          data-status="active"
-          style="
-           padding: 8px 16px;
-           border-radius: 20px;
-           border: 1px solid var(--line);
-           background: var(--panel);
-           color: var(--muted);
-           font-family: &quot;Nunito&quot;;
-           font-size: 13px;
-           font-weight: 700;
-           cursor: pointer;
-           transition: all 0.2s ease;
-          "
-         >
-          Active
+         <button class="pill-btn client-filter-btn" data-status="contacted">
+          Contacted
          </button>
-         <button
-          class="pill-btn client-filter-btn"
-          data-status="paused"
-          style="
-           padding: 8px 16px;
-           border-radius: 20px;
-           border: 1px solid var(--line);
-           background: var(--panel);
-           color: var(--muted);
-           font-family: &quot;Nunito&quot;;
-           font-size: 13px;
-           font-weight: 700;
-           cursor: pointer;
-           transition: all 0.2s ease;
-          "
-         >
-          Paused
+         <button class="pill-btn client-filter-btn" data-status="won">
+          Won
+         </button>
+         <button class="pill-btn client-filter-btn" data-status="lost">
+          Lost
          </button>
         </div>
        </div>
 
-       <div class="sorting-row" style="margin-bottom: 16px">
-        <select
-         id="client-sort-select"
-         class="sort-dropdown"
-         style="
-          padding: 8px 12px;
-          border-radius: 10px;
-          border: 1px solid var(--line);
-          background: var(--panel);
-          font-family: &quot;Nunito&quot;;
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--ink);
-          cursor: pointer;
-          outline: none;
-         "
-        >
+       <!-- სორტირება -->
+       <div class="sorting-row">
+        <select id="client-sort-select" class="sort-dropdown">
          <option value="newest">Newest Arrived</option>
          <option value="name">Sort by Name</option>
          <option value="value">Sort by Value</option>
@@ -225,9 +126,10 @@
         <input id="in-value" placeholder="e.g. $12,400" />
         <label class="f">Status</label>
         <select id="in-status">
-         <option value="new">New</option>
-         <option value="active">Active</option>
-         <option value="paused">Paused</option>
+         <option value="lead">Lead</option>
+         <option value="contacted">Contacted</option>
+         <option value="won">Won</option>
+         <option value="lost">Lost</option>
         </select>
         <button class="btn" id="add-btn" type="submit">Add client</button>
        </form>
@@ -237,7 +139,7 @@
    </main>
   </div>
 
-  <!-- Client Details / Tactical Field Notes Modal -->
+  <!-- Client Details Modal -->
   <div id="client-modal" class="modal-overlay hidden">
    <div class="modal-card card">
     <button type="button" id="close-modal" class="modal-close-btn">

@@ -1,6 +1,12 @@
 // clients.js — wires the clients page up to the mock API in api.js
 
-const statusLabel = { new: "New", active: "Active", paused: "Paused" };
+const statusLabel = {
+    lead: "Lead",
+    contacted: "Contacted",
+    won: "Won",
+    lost: "Lost",
+};
+
 let currentModalClientId = null;
 let currentFilter = "all";
 let currentSort = "newest";
@@ -14,9 +20,10 @@ function rowHtml(client) {
       <td>${client.value || "—"}</td>
       <td>
         <select class="status-select ${client.status}" onchange="updateClientStatus(event, ${client.id})">
-          <option value="new" ${client.status === "new" ? "selected" : ""}>New</option>
-          <option value="active" ${client.status === "active" ? "selected" : ""}>Active</option>
-          <option value="paused" ${client.status === "paused" ? "selected" : ""}>Paused</option>
+          <option value="lead" ${client.status === "lead" ? "selected" : ""}>Lead</option>
+          <option value="contacted" ${client.status === "contacted" ? "selected" : ""}>Contacted</option>
+          <option value="won" ${client.status === "won" ? "selected" : ""}>Won</option>
+          <option value="lost" ${client.status === "lost" ? "selected" : ""}>Lost</option>
         </select>
       </td>
       <td><button class="del-btn" onclick="removeClient(event, ${client.id})">Delete</button></td>
@@ -51,7 +58,7 @@ function filterAndSortClients() {
         );
     }
 
-    // 3. (Sorting)
+    // 3. Sorting
     filtered.sort((a, b) => {
         if (currentSort === "name") {
             return (a.name || "").localeCompare(b.name || "");
