@@ -13,17 +13,22 @@ let currentSort = "newest";
 let allLoadedClients = [];
 
 function rowHtml(client) {
+    const rawStatus = (client.status || "lead").toLowerCase();
+    const status = ["lead", "contacted", "won", "lost"].includes(rawStatus)
+        ? rawStatus
+        : "lead";
+
     return `
     <tr data-id="${client.id}" style="cursor: pointer;">
       <td>${client.name}</td>
       <td>${client.company}</td>
       <td>${client.value || "—"}</td>
       <td>
-        <select class="status-select ${client.status}" onchange="updateClientStatus(event, ${client.id})">
-          <option value="lead" ${client.status === "lead" ? "selected" : ""}>Lead</option>
-          <option value="contacted" ${client.status === "contacted" ? "selected" : ""}>Contacted</option>
-          <option value="won" ${client.status === "won" ? "selected" : ""}>Won</option>
-          <option value="lost" ${client.status === "lost" ? "selected" : ""}>Lost</option>
+        <select class="status-select ${status}" onchange="updateClientStatus(event, ${client.id})">
+          <option value="lead" ${status === "lead" ? "selected" : ""}>Lead</option>
+          <option value="contacted" ${status === "contacted" ? "selected" : ""}>Contacted</option>
+          <option value="won" ${status === "won" ? "selected" : ""}>Won</option>
+          <option value="lost" ${status === "lost" ? "selected" : ""}>Lost</option>
         </select>
       </td>
       <td><button class="del-btn" onclick="removeClient(event, ${client.id})">Delete</button></td>
@@ -44,8 +49,9 @@ function filterAndSortClients() {
 
     // 1. Filter by status
     let filtered = allLoadedClients.filter((client) => {
+        const clientStatus = (client.status || "lead").toLowerCase();
         if (currentFilter === "all") return true;
-        return client.status === currentFilter;
+        return clientStatus === currentFilter;
     });
 
     // 2. Search by name or company
@@ -94,7 +100,19 @@ function filterAndSortClients() {
 function loadClients() {
     const tbody = document.getElementById("client-rows");
     tbody.innerHTML = `<tr><td colspan="5"><div class="loading-state">Loading clients…</div></td></tr>`;
-    apiGetClients().then(renderClients);
+    apiGetClients().then((list) => {
+        const cleanedList = (list || []).map((c) => {
+            const s = (c.status || "lead").toLowerCase();
+            return {
+                ...c,
+                status: ["lead", "contacted", "won", "lost"].includes(s)
+                    ? s
+                    : "lead",
+            };
+        });
+        localStorage.setItem("crm_clients", JSON.stringify(cleanedList));
+        renderClients(cleanedList);
+    });
 }
 
 function addClient(event) {

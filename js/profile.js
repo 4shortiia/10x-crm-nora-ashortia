@@ -226,6 +226,9 @@ function initProfile() {
                 )
             ) {
                 localStorage.removeItem("crm_clients");
+                if (typeof apiGetClients === "function") {
+                    apiGetClients();
+                }
                 if (typeof showToast === "function") {
                     showToast("Client data wiped. Reloading...", "success");
                 }
