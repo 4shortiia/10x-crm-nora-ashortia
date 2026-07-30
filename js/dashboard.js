@@ -8,15 +8,22 @@ function initClock() {
             liveClockEl.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
         }
     };
-    updateClock(); // appear immediately
-    setInterval(updateClock, 1000); // Update every 1 second
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+// დამხმარე ფუნქცია: თანხის ფორმატირება (მაგ: 118000 -> $118K)
+function formatCurrency(num) {
+    if (num >= 1000) {
+        return `$${Math.round(num / 1000)}K`;
+    }
+    return `$${num.toLocaleString()}`;
 }
 
 async function initDashboard() {
-    // 1. Start the clock
     initClock();
 
-    // 2. Updating the user profile in Topbar
+    // 1. Profiling Topbar Avatar
     try {
         if (typeof getSession === "function") {
             const session = getSession();
@@ -41,7 +48,7 @@ async function initDashboard() {
         console.error("Session error:", e);
     }
 
-    // 3. Acquiring clients and updating statistics
+    // 2. Client Metrics Calculation
     try {
         let clients = [];
 
@@ -53,40 +60,48 @@ async function initDashboard() {
 
         if (!Array.isArray(clients)) clients = [];
 
-        // ა) Total Clients & Active Clients
         const statClientsEl = document.getElementById("stat-clients");
         const statActiveEl = document.getElementById("stat-active");
+        const statDealsEl = document.getElementById("stat-deals");
+        const statRevenueEl = document.getElementById("stat-revenue");
 
+        // ა) Total Clients
         if (statClientsEl) statClientsEl.textContent = clients.length;
 
-        const activeClients = clients.filter(
-            (c) => c.status && c.status.toLowerCase() === "active",
-        );
+        // ბ) Active Clients (Lead და Contacted სტატუსის მქონე კლიენტები)
+        const activeClients = clients.filter((c) => {
+            const st = c.status ? c.status.toLowerCase() : "";
+            return st === "lead" || st === "contacted";
+        });
         if (statActiveEl) statActiveEl.textContent = activeClients.length;
 
-        // b) Update Revenue (if customers have a value field)
-        const statRevenueEl = document.getElementById("stat-revenue");
+        // გ) Deals Won (Won სტატუსის მქონე კლიენტები)
+        const wonClients = clients.filter(
+            (c) => c.status && c.status.toLowerCase() === "won",
+        );
+        if (statDealsEl) statDealsEl.textContent = wonClients.length;
+
+        // დ) Revenue (მხოლოდ Won კლიენტების ჯამური თანხა)
         if (statRevenueEl) {
-            const totalRevenue = clients.reduce((sum, c) => {
+            const totalRevenue = wonClients.reduce((sum, c) => {
                 const val = parseFloat(
                     c.value?.toString().replace(/[^0-9.]/g, "") || 0,
                 );
                 return sum + val;
             }, 0);
 
-            if (totalRevenue > 0) {
-                statRevenueEl.textContent = `$${totalRevenue.toLocaleString()}`;
-            }
+            statRevenueEl.textContent = formatCurrency(totalRevenue);
         }
 
-        // c) Recent Activity
+        // ე) Activity & Top Deals Render
         renderRecentActivity(clients);
+        renderTopDeals(clients);
     } catch (error) {
         console.error("Error loading dashboard metrics:", error);
     }
 }
 
-// Recent Activity
+// Recent Activity Render
 function renderRecentActivity(clients) {
     const activityCard = document.getElementById("recent-activity-card");
     if (!activityCard) return;
@@ -99,7 +114,6 @@ function renderRecentActivity(clients) {
         return;
     }
 
-    // Gets the last 4 added clients
     const recentClients = [...clients].reverse().slice(0, 4);
 
     let html = `<div class="sec-title">Recent activity</div>`;
@@ -115,6 +129,55 @@ function renderRecentActivity(clients) {
     });
 
     activityCard.innerHTML = html;
+}
+
+// Top Deals Render (ყველაზე მაღალბიუჯეტიანი 4 გარიგება/კლიენტი)
+function renderTopDeals(clients) {
+    const dealsCard = document.getElementById("top-deals-card");
+    if (!dealsCard) return;
+
+    if (clients.length === 0) {
+        dealsCard.innerHTML = `
+            <div class="sec-title">Top deals</div>
+            <div class="empty-state">No deals found</div>
+        `;
+        return;
+    }
+
+    // კლებადობით დალაგება თანხის მიხედვით და ტოპ 4-ის წამოღება
+    const sortedClients = [...clients]
+        .map((c) => ({
+            ...c,
+            numericValue: parseFloat(
+                c.value?.toString().replace(/[^0-9.]/g, "") || 0,
+            ),
+        }))
+        .sort((a, b) => b.numericValue - a.numericValue)
+        .slice(0, 4);
+
+    let html = `<div class="sec-title">Top deals</div>`;
+
+    sortedClients.forEach((client) => {
+        const clientName = client.name || client.company || "Client";
+        const initials = clientName
+            .split(" ")
+            .map((p) => p[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
+
+        const formattedVal = formatCurrency(client.numericValue);
+
+        html += `
+            <div class="rep">
+                <span class="av">${initials}</span>
+                <span class="nm">${clientName}</span>
+                <span class="val">${formattedVal}</span>
+            </div>
+        `;
+    });
+
+    dealsCard.innerHTML = html;
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
