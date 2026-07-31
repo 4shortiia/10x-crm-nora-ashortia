@@ -75,14 +75,14 @@ function initProfile() {
 
     if (editProfileBtn && profileViewMode && profileEditForm) {
         editProfileBtn.addEventListener("click", () => {
-            // არსებული მონაცემების შეტანა ინპუტებში
+            // Entering existing data into inputs
             if (editNameInput) editNameInput.value = session.name || "";
             if (editEmailInput) editEmailInput.value = session.email || "";
             if (editCompanyInput)
                 editCompanyInput.value =
                     session.company || currentUser.company || "";
 
-            // რეჟიმების გადართვა
+            // Switching modes
             profileViewMode.style.display = "none";
             profileEditForm.style.display = "block";
             editProfileBtn.style.display = "none";
