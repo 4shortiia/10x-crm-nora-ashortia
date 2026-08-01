@@ -18,21 +18,62 @@ function rowHtml(client) {
         ? rawStatus
         : "lead";
 
-    return `
-    <tr data-id="${client.id}" style="cursor: pointer;">
-      <td>${client.name}</td>
-      <td>${client.company}</td>
-      <td>${client.value || "—"}</td>
-      <td>
-        <select class="status-select ${status}" onchange="updateClientStatus(event, ${client.id})">
-          <option value="lead" ${status === "lead" ? "selected" : ""}>Lead</option>
-          <option value="contacted" ${status === "contacted" ? "selected" : ""}>Contacted</option>
-          <option value="won" ${status === "won" ? "selected" : ""}>Won</option>
-          <option value="lost" ${status === "lost" ? "selected" : ""}>Lost</option>
-        </select>
-      </td>
-      <td><button class="del-btn" onclick="removeClient(event, ${client.id})">Delete</button></td>
-    </tr>`;
+    const tr = document.createElement("tr");
+    tr.dataset.id = client.id;
+    tr.style.cursor = "pointer";
+
+    // 1. Name
+    const tdName = document.createElement("td");
+    tdName.textContent = client.name;
+    tr.appendChild(tdName);
+
+    // 2. Company
+    const tdCompany = document.createElement("td");
+    tdCompany.textContent = client.company;
+    tr.appendChild(tdCompany);
+
+    // 3. Value
+    const tdValue = document.createElement("td");
+    tdValue.textContent = client.value || "—";
+    tr.appendChild(tdValue);
+
+    // 4. Status Select
+    const tdSelect = document.createElement("td");
+    const select = document.createElement("select");
+    select.className = `status-select ${status}`;
+    select.addEventListener("change", (e) => updateClientStatus(e, client.id));
+
+    const statuses = [
+        { value: "lead", label: "Lead" },
+        { value: "contacted", label: "Contacted" },
+        { value: "won", label: "Won" },
+        { value: "lost", label: "Lost" },
+    ];
+
+    statuses.forEach((s) => {
+        const option = document.createElement("option");
+        option.value = s.value;
+        option.textContent = s.label;
+        if (status === s.value) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+
+    tdSelect.appendChild(select);
+    tr.appendChild(tdSelect);
+
+    // 5. Delete Button
+    const tdBtn = document.createElement("td");
+    const button = document.createElement("button");
+    button.className = "del-btn";
+    button.textContent = "Delete";
+    button.addEventListener("click", (e) => removeClient(e, client.id));
+
+    tdBtn.appendChild(button);
+    tr.appendChild(tdBtn);
+
+    return tr;
 }
 
 function renderClients(list) {
@@ -80,26 +121,48 @@ function filterAndSortClients() {
         }
     });
 
+    tbody.innerHTML = "";
+
     if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No matching clients found.</div></td></tr>`;
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        const div = document.createElement("div");
+        div.className = "empty-state";
+        div.textContent = "No matching clients found.";
+        td.appendChild(div);
+        tr.appendChild(td);
+        tbody.appendChild(tr);
         return;
     }
 
-    tbody.innerHTML = filtered.map(rowHtml).join("");
+    filtered.forEach((client, index) => {
+        const rowElement = rowHtml(client);
 
-    // Bind clicking on rows to open a modal (unless we click on delete or select)
-    tbody.querySelectorAll("tr").forEach((tr, index) => {
-        tr.addEventListener("click", (e) => {
+        // Bind clicking on rows to open a modal (unless we click on delete or select)
+        rowElement.addEventListener("click", (e) => {
             if (e.target.closest(".del-btn") || e.target.closest("select"))
                 return;
             openClientModal(filtered[index].id);
         });
+
+        tbody.appendChild(rowElement);
     });
 }
 
 function loadClients() {
     const tbody = document.getElementById("client-rows");
-    tbody.innerHTML = `<tr><td colspan="5"><div class="loading-state">Loading clients…</div></td></tr>`;
+    tbody.innerHTML = "";
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 5;
+    const div = document.createElement("div");
+    div.className = "loading-state";
+    div.textContent = "Loading clients…";
+    td.appendChild(div);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+
     apiGetClients().then((list) => {
         const cleanedList = (list || []).map((c) => {
             const s = (c.status || "lead").toLowerCase();
@@ -201,22 +264,47 @@ function renderNotes(notes) {
     const list = document.getElementById("m-notes-list");
     if (!list) return;
 
+    list.innerHTML = "";
+
     if (!notes.length) {
-        list.innerHTML =
-            '<div class="empty-notes" style="color:var(--muted); font-size:13px; text-align:center; padding:15px;">No notes yet.</div>';
+        const emptyDiv = document.createElement("div");
+        emptyDiv.className = "empty-notes";
+        emptyDiv.style.cssText =
+            "color:var(--muted); font-size:13px; text-align:center; padding:15px;";
+        emptyDiv.textContent = "No notes yet.";
+        list.appendChild(emptyDiv);
         return;
     }
 
-    list.innerHTML = notes
-        .map(
-            (n, index) => `
-        <div class="note-item" style="background:var(--panel); padding:8px 12px; border-radius:8px; margin-bottom:8px; border:1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size:13px;"><b style="color:var(--muted); font-size:11px; display:block;">${n.date}</b>${n.text}</span>
-            <button onclick="deleteClientNote(${currentModalClientId}, ${index})" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0 4px;" title="Delete note">&times;</button>
-        </div>
-    `,
-        )
-        .join("");
+    notes.forEach((n, index) => {
+        const noteItem = document.createElement("div");
+        noteItem.className = "note-item";
+        noteItem.style.cssText =
+            "background:var(--panel); padding:8px 12px; border-radius:8px; margin-bottom:8px; border:1px solid var(--line); display: flex; justify-content: space-between; align-items: center;";
+
+        const span = document.createElement("span");
+        span.style.fontSize = "13px";
+
+        const b = document.createElement("b");
+        b.style.cssText = "color:var(--muted); font-size:11px; display:block;";
+        b.textContent = n.date;
+
+        span.appendChild(b);
+        span.append(n.text);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.style.cssText =
+            "background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0 4px;";
+        deleteBtn.title = "Delete note";
+        deleteBtn.innerHTML = "&times;";
+        deleteBtn.addEventListener("click", () =>
+            deleteClientNote(currentModalClientId, index),
+        );
+
+        noteItem.appendChild(span);
+        noteItem.appendChild(deleteBtn);
+        list.appendChild(noteItem);
+    });
 }
 
 function deleteClientNote(clientId, noteIndex) {

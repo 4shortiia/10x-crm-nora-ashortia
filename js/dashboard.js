@@ -12,7 +12,7 @@ function initClock() {
     setInterval(updateClock, 1000);
 }
 
-// დამხმარე ფუნქცია: თანხის ფორმატირება (მაგ: 118000 -> $118K)
+// Helper function: Formatting amounts (e.g. 118000 -> $118K)
 function formatCurrency(num) {
     if (num >= 1000) {
         return `$${Math.round(num / 1000)}K`;
@@ -65,23 +65,23 @@ async function initDashboard() {
         const statDealsEl = document.getElementById("stat-deals");
         const statRevenueEl = document.getElementById("stat-revenue");
 
-        // ა) Total Clients
+        // a) Total Clients
         if (statClientsEl) statClientsEl.textContent = clients.length;
 
-        // ბ) Active Clients (Lead და Contacted სტატუსის მქონე კლიენტები)
+        // b) Active Clients (Lead and Contacted status clients only)
         const activeClients = clients.filter((c) => {
             const st = c.status ? c.status.toLowerCase() : "";
             return st === "lead" || st === "contacted";
         });
         if (statActiveEl) statActiveEl.textContent = activeClients.length;
 
-        // გ) Deals Won (Won სტატუსის მქონე კლიენტები)
+        // c) Deals Won
         const wonClients = clients.filter(
             (c) => c.status && c.status.toLowerCase() === "won",
         );
         if (statDealsEl) statDealsEl.textContent = wonClients.length;
 
-        // დ) Revenue (მხოლოდ Won კლიენტების ჯამური თანხა)
+        // d) Revenue
         if (statRevenueEl) {
             const totalRevenue = wonClients.reduce((sum, c) => {
                 const val = parseFloat(
@@ -106,45 +106,72 @@ function renderRecentActivity(clients) {
     const activityCard = document.getElementById("recent-activity-card");
     if (!activityCard) return;
 
+    activityCard.innerHTML = "";
+
+    const secTitle = document.createElement("div");
+    secTitle.className = "sec-title";
+    secTitle.textContent = "Recent activity";
+    activityCard.appendChild(secTitle);
+
     if (clients.length === 0) {
-        activityCard.innerHTML = `
-            <div class="sec-title">Recent activity</div>
-            <div class="empty-state">No recent activity yet</div>
-        `;
+        const emptyState = document.createElement("div");
+        emptyState.className = "empty-state";
+        emptyState.textContent = "No recent activity yet";
+        activityCard.appendChild(emptyState);
         return;
     }
 
     const recentClients = [...clients].reverse().slice(0, 4);
 
-    let html = `<div class="sec-title">Recent activity</div>`;
-
     recentClients.forEach((client) => {
-        html += `
-            <div class="row">
-                <span class="dot"></span>
-                <span class="txt"><b>${client.name || "Client"}</b> added — ${client.company || "New Lead"}</span>
-                <span class="time">Recently</span>
-            </div>
-        `;
-    });
+        const row = document.createElement("div");
+        row.className = "row";
 
-    activityCard.innerHTML = html;
+        const dot = document.createElement("span");
+        dot.className = "dot";
+
+        const txt = document.createElement("span");
+        txt.className = "txt";
+
+        const b = document.createElement("b");
+        b.textContent = client.name || "Client";
+
+        txt.appendChild(b);
+        txt.append(` added — ${client.company || "New Lead"}`);
+
+        const time = document.createElement("span");
+        time.className = "time";
+        time.textContent = "Recently";
+
+        row.appendChild(dot);
+        row.appendChild(txt);
+        row.appendChild(time);
+
+        activityCard.appendChild(row);
+    });
 }
 
-// Top Deals Render (ყველაზე მაღალბიუჯეტიანი 4 გარიგება/კლიენტი)
+// Top Deals Render (Top 4 highest-budget deals/client)
 function renderTopDeals(clients) {
     const dealsCard = document.getElementById("top-deals-card");
     if (!dealsCard) return;
 
+    dealsCard.innerHTML = "";
+
+    const secTitle = document.createElement("div");
+    secTitle.className = "sec-title";
+    secTitle.textContent = "Top deals";
+    dealsCard.appendChild(secTitle);
+
     if (clients.length === 0) {
-        dealsCard.innerHTML = `
-            <div class="sec-title">Top deals</div>
-            <div class="empty-state">No deals found</div>
-        `;
+        const emptyState = document.createElement("div");
+        emptyState.className = "empty-state";
+        emptyState.textContent = "No deals found";
+        dealsCard.appendChild(emptyState);
         return;
     }
 
-    // კლებადობით დალაგება თანხის მიხედვით და ტოპ 4-ის წამოღება
+    // Sort by amount in descending order and take the top 4
     const sortedClients = [...clients]
         .map((c) => ({
             ...c,
@@ -154,8 +181,6 @@ function renderTopDeals(clients) {
         }))
         .sort((a, b) => b.numericValue - a.numericValue)
         .slice(0, 4);
-
-    let html = `<div class="sec-title">Top deals</div>`;
 
     sortedClients.forEach((client) => {
         const clientName = client.name || client.company || "Client";
@@ -168,16 +193,27 @@ function renderTopDeals(clients) {
 
         const formattedVal = formatCurrency(client.numericValue);
 
-        html += `
-            <div class="rep">
-                <span class="av">${initials}</span>
-                <span class="nm">${clientName}</span>
-                <span class="val">${formattedVal}</span>
-            </div>
-        `;
-    });
+        const rep = document.createElement("div");
+        rep.className = "rep";
 
-    dealsCard.innerHTML = html;
+        const av = document.createElement("span");
+        av.className = "av";
+        av.textContent = initials;
+
+        const nm = document.createElement("span");
+        nm.className = "nm";
+        nm.textContent = clientName;
+
+        const val = document.createElement("span");
+        val.className = "val";
+        val.textContent = formattedVal;
+
+        rep.appendChild(av);
+        rep.appendChild(nm);
+        rep.appendChild(val);
+
+        dealsCard.appendChild(rep);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);
